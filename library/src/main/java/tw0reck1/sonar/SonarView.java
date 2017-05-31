@@ -48,20 +48,14 @@ public class SonarView extends RotaryView {
             SHORT_LINE_ANGLE = 360 / SHORT_LINE_COUNT,
             DEFAULT_SCANNER_ROTATION_ANGLE = 4;
 
-    private Paint
-            mBackgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG),
-            mInnerBackgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG),
-            mPointPaint = new Paint(Paint.ANTI_ALIAS_FLAG),
-            mStrokePaint = new Paint(Paint.ANTI_ALIAS_FLAG),
-            mThinStrokePaint = new Paint(Paint.ANTI_ALIAS_FLAG),
-            mFontPaint = new Paint(Paint.ANTI_ALIAS_FLAG),
-            mSmallFontPaint = new Paint(Paint.ANTI_ALIAS_FLAG),
+    private Paint mPointPaint = new Paint(Paint.ANTI_ALIAS_FLAG),
             mArcPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
-    private Bitmap mCircleBitmap, mLinesBitmap, mLabelsBitmap;
-    protected int mScannerRotation;
+    private Bitmap mSonarBitmap;
 
     private List<SonarPoint> mPointsList = new LinkedList<>();
+
+    protected int mScannerAngle;
 
     protected int mColor = DEFAULT_COLOR;
     protected int mArcColor = DEFAULT_COLOR & ARC_MASK;
@@ -102,26 +96,10 @@ public class SonarView extends RotaryView {
         mPointGradientStartColor = mColor & POINT_GRADIENT_START_MASK;
         mPointGradientEndColor = mColor & POINT_GRADIENT_END_MASK;
 
-        mBackgroundPaint.setColor(Color.BLACK);
-        mBackgroundPaint.setStyle(Paint.Style.FILL);
-
-        mInnerBackgroundPaint.setColor(mColor & INNER_CIRCLE_MASK);
-        mInnerBackgroundPaint.setStyle(Paint.Style.FILL);
+        mArcPaint.setStyle(Paint.Style.FILL);
 
         mPointPaint.setColor(mColor);
         mPointPaint.setStyle(Paint.Style.FILL);
-
-        mStrokePaint.setColor(mColor);
-        mStrokePaint.setStyle(Paint.Style.STROKE);
-
-        mThinStrokePaint.setColor(mColor);
-        mThinStrokePaint.setStyle(Paint.Style.STROKE);
-
-        mSmallFontPaint.setColor(mColor);
-        mSmallFontPaint.setTextAlign(Paint.Align.CENTER);
-
-        mFontPaint.setColor(mColor);
-        mFontPaint.setTextAlign(Paint.Align.CENTER);
     }
 
     public void setPoints(Collection<SonarPoint> points) {
@@ -129,46 +107,27 @@ public class SonarView extends RotaryView {
         mPointsList.addAll(points);
     }
 
+    public void addPoints(SonarPoint...points) {
+        for (SonarPoint point : points) {
+            mPointsList.add(point);
+        }
+    }
+
     @Override
-    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-        float centerX = w/2f, centerY = h/2f,
-                drawWidth = w - getPaddingLeft() - getPaddingRight(),
-                drawHeight = h - getPaddingTop() - getPaddingBottom(),
+    protected void onSizeChanged(int width, int height, int oldw, int oldh) {
+        float centerX = width / 2f, centerY = height / 2f,
+                drawWidth = width - getPaddingLeft() - getPaddingRight(),
+                drawHeight = height - getPaddingTop() - getPaddingBottom(),
                 radius = Math.min(drawWidth, drawHeight) / 2f;
 
-        mStrokePaint.setStrokeWidth(radius / 150);
-
-        mThinStrokePaint.setStrokeWidth(radius / 300);
-
-        mSmallFontPaint.setTextSize(radius / 16);
-
-        mFontPaint.setTextSize(radius / 12);
-        mFontPaint.setFakeBoldText(true);
-
-        mArcPaint.setStyle(Paint.Style.FILL);
-
-        mCircleBitmap = getCircleBitmap(w, h, centerX, centerY, radius);
-        mLinesBitmap = getLinesBitmap(w, h, centerX, centerY, radius);
-        mLabelsBitmap = getLabelsBitmap(w, h, centerX, centerY, radius);
+        mSonarBitmap = getSonarBitmap(width, height, centerX, centerY, radius);
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         update();
 
-        float width = canvas.getWidth(),
-                height = canvas.getHeight(),
-                drawWidth = width - getPaddingLeft() - getPaddingRight(),
-                drawHeight = height - getPaddingTop() - getPaddingBottom(),
-                centerX = width / 2f,
-                centerY = height / 2f,
-                radius = Math.min(drawWidth, drawHeight) / 2f;
-
-        drawCircle(canvas, width, height, centerX, centerY, radius);
-        drawLines(canvas, width, height, centerX, centerY, radius);
-        drawLabels(canvas, width, height, centerX, centerY, radius);
-        drawPoints(canvas, width, height, centerX, centerY, radius);
-        drawArc(canvas, width, height, centerX, centerY, radius);
+        drawSonar(canvas);
 
         invalidate();
     }
@@ -176,7 +135,7 @@ public class SonarView extends RotaryView {
     protected void update() {
         updateAngle();
 
-        mScannerRotation = (mScannerRotation + getScannerRotationAngle()) % 360;
+        mScannerAngle = (mScannerAngle + getScannerRotationAngle()) % 360;
 
         detectPoints();
     }
@@ -191,23 +150,23 @@ public class SonarView extends RotaryView {
         long currentMs = System.currentTimeMillis();
 
         for (SonarPoint point : mPointsList) {
-            point.detect(currentMs, mCurrentAngle, mScannerRotation);
+            point.detect(currentMs, mCurrentAngle, mScannerAngle);
         }
     }
 
-    protected void drawCircle(Canvas canvas, float width, float height, float centerX, float centerY, float radius){
-        canvas.drawBitmap(mCircleBitmap, 0, 0, null);
+    protected void drawSonar(Canvas canvas) {
+        float width = canvas.getWidth(), height = canvas.getHeight(),
+                drawWidth = width - getPaddingLeft() - getPaddingRight(),
+                drawHeight = height - getPaddingTop() - getPaddingBottom(),
+                centerX = width / 2f, centerY = height / 2f,
+                radius = Math.min(drawWidth, drawHeight) / 2f;
+
+        canvas.drawBitmap(mSonarBitmap, 0, 0, null);
+        drawPoints(canvas, width, height, centerX, centerY, radius);
+        drawArc(canvas, width, height, centerX, centerY, radius);
     }
 
-    protected void drawLines(Canvas canvas, float width, float height, float centerX, float centerY, float radius){
-        canvas.drawBitmap(mLinesBitmap, 0, 0, null);
-    }
-
-    protected void drawLabels(Canvas canvas, float width, float height, float centerX, float centerY, float radius){
-        canvas.drawBitmap(mLabelsBitmap, 0, 0, null);
-    }
-
-    protected void drawPoints(Canvas canvas, float width, float height, float centerX, float centerY, float radius){
+    private void drawPoints(Canvas canvas, float width, float height, float centerX, float centerY, float radius) {
         if (!hasSensors()) return;
 
         float circleBaseRadius = Math.max(1, radius / 50);
@@ -220,32 +179,32 @@ public class SonarView extends RotaryView {
 
             PointF circleCenter = SonarUtils.getPointOnCircle(centerX, centerY,
                     (radius * 0.8f - circleBaseRadius) * point.getDetectedDist(),
-                    point.getDetectedDegree());
+                    point.getDetectedAngle());
 
             mPointPaint.setShader(new RadialGradient(
                     circleCenter.x, circleCenter.y, 3.5f * circleBaseRadius,
                     mPointGradientStartColor, mPointGradientEndColor, Shader.TileMode.CLAMP));
-            mPointPaint.setAlpha((int)(point.getVisibility()*255));
+            mPointPaint.setAlpha((int) (point.getVisibility() * 255));
 
             canvas.drawCircle(circleCenter.x, circleCenter.y, circleRadius, mPointPaint);
         }
     }
 
-    protected void drawArc(Canvas canvas, float width, float height, float centerX, float centerY, float radius){
+    private void drawArc(Canvas canvas, float width, float height, float centerX, float centerY, float radius){
         if (!hasSensors()) return;
 
         radius *= 0.8f;
 
-        int degree = -90 + mScannerRotation;
+        int degree = -90 + mScannerAngle;
         int offset = 360;
         int transparentArc = 0x00ffffff & mArcColor;
 
         Shader gradient = new SweepGradient(centerX, centerY,
-                new int[]{transparentArc, transparentArc, transparentArc,
+                new int[] {transparentArc, transparentArc, transparentArc,
                         transparentArc, transparentArc, mArcColor}, null);
 
         Matrix gradientMatrix = new Matrix();
-        gradientMatrix.preRotate(degree-1, centerX, centerY);
+        gradientMatrix.preRotate(degree - 1, centerX, centerY);
         gradient.setLocalMatrix(gradientMatrix);
 
         mArcPaint.setShader(gradient);
@@ -256,64 +215,83 @@ public class SonarView extends RotaryView {
         canvas.drawArc(rect, degree, offset, true, mArcPaint);
     }
 
-    private Bitmap getCircleBitmap(int width, int height, float centerX, float centerY, float radius){
+    private Bitmap getSonarBitmap(int width, int height, float centerX, float centerY, float radius){
         Bitmap result = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
         Canvas circleCanvas = new Canvas(result);
 
-        circleCanvas.drawCircle(centerX, centerY, radius, mBackgroundPaint);
-        circleCanvas.drawCircle(centerX, centerY, radius * 0.8f, mInnerBackgroundPaint);
+        Paint backgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        backgroundPaint.setColor(Color.BLACK);
+        backgroundPaint.setStyle(Paint.Style.FILL);
 
-        circleCanvas.drawCircle(centerX, centerY, radius, mStrokePaint);
-        circleCanvas.drawCircle(centerX, centerY, radius * 0.8f, mThinStrokePaint);
-        circleCanvas.drawCircle(centerX, centerY, radius * 0.65f, mThinStrokePaint);
-        circleCanvas.drawCircle(centerX, centerY, radius * 0.5f, mThinStrokePaint);
-        circleCanvas.drawCircle(centerX, centerY, radius * 0.35f, mThinStrokePaint);
-        circleCanvas.drawCircle(centerX, centerY, radius * 0.2f, mThinStrokePaint);
-        circleCanvas.drawCircle(centerX, centerY, radius * 0.05f, mThinStrokePaint);
+        circleCanvas.drawCircle(centerX, centerY, radius, backgroundPaint);
 
-        return result;
-    }
+        Paint innerBackgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        innerBackgroundPaint.setColor(mColor & INNER_CIRCLE_MASK);
+        innerBackgroundPaint.setStyle(Paint.Style.FILL);
 
-    private Bitmap getLinesBitmap(int width, int height, float centerX, float centerY, float radius){
-        Bitmap result = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-        Canvas linesCanvas = new Canvas(result);
+        circleCanvas.drawCircle(centerX, centerY, radius * 0.8f, innerBackgroundPaint);
 
-        for(int i=0; i<LINE_COUNT; i++){
+        Paint strokePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        strokePaint.setColor(mColor);
+        strokePaint.setStyle(Paint.Style.STROKE);
+        strokePaint.setStrokeWidth(radius / 150);
+
+        Paint thinStrokePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        thinStrokePaint.setColor(mColor);
+        thinStrokePaint.setStyle(Paint.Style.STROKE);
+        thinStrokePaint.setStrokeWidth(radius / 300);
+
+        circleCanvas.drawCircle(centerX, centerY, radius, strokePaint);
+        circleCanvas.drawCircle(centerX, centerY, radius * 0.8f, thinStrokePaint);
+        circleCanvas.drawCircle(centerX, centerY, radius * 0.65f, thinStrokePaint);
+        circleCanvas.drawCircle(centerX, centerY, radius * 0.5f, thinStrokePaint);
+        circleCanvas.drawCircle(centerX, centerY, radius * 0.35f, thinStrokePaint);
+        circleCanvas.drawCircle(centerX, centerY, radius * 0.2f, thinStrokePaint);
+        circleCanvas.drawCircle(centerX, centerY, radius * 0.05f, thinStrokePaint);
+
+        for (int i = 0; i < LINE_COUNT; i++) {
             int angle = i * LINE_ANGLE;
             PointF start = SonarUtils.getPointOnCircle(centerX, centerY, radius * 0.8f, angle),
                     end = SonarUtils.getPointOnCircle(centerX, centerY, 0f, angle);
-            linesCanvas.drawLine(start.x, start.y, end.x, end.y,
-                    i%(LINE_COUNT/4)==0 ? mStrokePaint : mThinStrokePaint);
+
+            circleCanvas.drawLine(start.x, start.y, end.x, end.y,
+                    (i % (LINE_COUNT / 4) == 0) ? strokePaint : thinStrokePaint);
         }
 
-        for(int i=0; i<SHORT_LINE_COUNT; i++){
+        for (int i = 0; i < SHORT_LINE_COUNT; i++) {
             int angle = i * SHORT_LINE_ANGLE;
             boolean longerLine = (i % 3 == 0);
             PointF start = SonarUtils.getPointOnCircle(centerX, centerY,
                     radius * (longerLine ? 0.83f : 0.81f), angle),
                     end = SonarUtils.getPointOnCircle(centerX, centerY,
                             radius * (longerLine ? 0.75f : 0.78f), angle);
-            linesCanvas.drawLine(start.x, start.y, end.x, end.y,
-                    i%(SHORT_LINE_COUNT/4)==0 ? mStrokePaint : mThinStrokePaint);
+
+            circleCanvas.drawLine(start.x, start.y, end.x, end.y,
+                    (i % (SHORT_LINE_COUNT / 4) == 0) ? strokePaint : thinStrokePaint);
         }
 
-        return result;
-    }
+        Paint fontPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        fontPaint.setColor(mColor);
+        fontPaint.setTextAlign(Paint.Align.CENTER);
+        fontPaint.setFakeBoldText(true);
+        fontPaint.setTextSize(radius / 12);
 
-    private Bitmap getLabelsBitmap(int width, int height, float centerX, float centerY, float radius) {
-        Bitmap result = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-        Canvas labelsCanvas = new Canvas(result);
+        Paint smallFontPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        smallFontPaint.setColor(mColor);
+        smallFontPaint.setTextAlign(Paint.Align.CENTER);
+        smallFontPaint.setTextSize(radius / 16);
 
-        int count = (mSmallFontPaint.getTextSize() > 24f)
-                ? 15 : ((mSmallFontPaint.getTextSize() > 12f) ? 30 : 45);
+        int count = (smallFontPaint.getTextSize() > 24f)
+                ? 15 : ((smallFontPaint.getTextSize() > 12f) ? 30 : 45);
 
         Paint usedPaint;
 
         for (int i = 0; i < 360 / count; i++) {
             int degree = i * count;
-            usedPaint = (degree % 90 == 0) ? mFontPaint : mSmallFontPaint;
+            usedPaint = (degree % 90 == 0) ? fontPaint : smallFontPaint;
             PointF start = SonarUtils.getPointOnCircle(centerX, centerY, radius * 0.9f, degree);
-            labelsCanvas.drawText(Integer.toString(degree), start.x, start.y
+
+            circleCanvas.drawText(Integer.toString(degree), start.x, start.y
                     - ((usedPaint.descent() + usedPaint.ascent()) / 2), usedPaint);
         }
 
