@@ -113,14 +113,21 @@ public class SonarView extends RotaryView {
         }
     }
 
-    @Override
-    protected void onSizeChanged(int width, int height, int oldw, int oldh) {
-        float centerX = width / 2f, centerY = height / 2f,
-                drawWidth = width - getPaddingLeft() - getPaddingRight(),
-                drawHeight = height - getPaddingTop() - getPaddingBottom(),
-                radius = Math.min(drawWidth, drawHeight) / 2f;
+    public void setColor(int color) {
+        mColor = color;
+        mArcColor = mColor & ARC_MASK;
+        mPointGradientStartColor = mColor & POINT_GRADIENT_START_MASK;
+        mPointGradientEndColor = mColor & POINT_GRADIENT_END_MASK;
 
-        mSonarBitmap = getSonarBitmap(width, height, centerX, centerY, radius);
+        mPointPaint.setColor(mColor);
+        if (mSonarBitmap != null) {
+            mSonarBitmap = getSonarBitmap(getWidth(), getHeight());
+        }
+    }
+
+    @Override
+    protected void onSizeChanged(int width, int height, int oldwidth, int oldheight) {
+        mSonarBitmap = getSonarBitmap(width, height);
     }
 
     @Override
@@ -215,7 +222,12 @@ public class SonarView extends RotaryView {
         canvas.drawArc(rect, degree, offset, true, mArcPaint);
     }
 
-    private Bitmap getSonarBitmap(int width, int height, float centerX, float centerY, float radius){
+    private Bitmap getSonarBitmap(int width, int height) {
+        float centerX = width / 2f, centerY = height / 2f,
+                drawWidth = width - getPaddingLeft() - getPaddingRight(),
+                drawHeight = height - getPaddingTop() - getPaddingBottom(),
+                radius = Math.min(drawWidth, drawHeight) / 2f;
+
         Bitmap result = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
         Canvas circleCanvas = new Canvas(result);
 
