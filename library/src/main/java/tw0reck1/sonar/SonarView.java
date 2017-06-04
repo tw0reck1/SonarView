@@ -255,11 +255,10 @@ public class SonarView extends RotaryView {
 
         circleCanvas.drawCircle(centerX, centerY, radius, strokePaint);
         circleCanvas.drawCircle(centerX, centerY, radius * 0.8f, thinStrokePaint);
-        circleCanvas.drawCircle(centerX, centerY, radius * 0.65f, thinStrokePaint);
-        circleCanvas.drawCircle(centerX, centerY, radius * 0.5f, thinStrokePaint);
-        circleCanvas.drawCircle(centerX, centerY, radius * 0.35f, thinStrokePaint);
-        circleCanvas.drawCircle(centerX, centerY, radius * 0.2f, thinStrokePaint);
-        circleCanvas.drawCircle(centerX, centerY, radius * 0.05f, thinStrokePaint);
+        circleCanvas.drawCircle(centerX, centerY, radius * 0.64f, thinStrokePaint);
+        circleCanvas.drawCircle(centerX, centerY, radius * 0.48f, thinStrokePaint);
+        circleCanvas.drawCircle(centerX, centerY, radius * 0.32f, thinStrokePaint);
+        circleCanvas.drawCircle(centerX, centerY, radius * 0.16f, thinStrokePaint);
 
         for (int i = 0; i < LINE_COUNT; i++) {
             int angle = i * LINE_ANGLE;

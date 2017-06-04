@@ -15,6 +15,9 @@
  */
 package tw0reck1.sonar;
 
+/**
+ * A point showing on sonar when detected.
+ */
 public class SonarPoint {
 
     private static final long DEFAULT_LIFETIME = 1250L;
@@ -24,21 +27,61 @@ public class SonarPoint {
     private int mDetectedAngle, mLastAngle, mLastScannerAngle;
     private float mDetectedDist, mVisibility;
 
-    private int mAngle;
-    private float mDist;
-    private long mLifeTime = DEFAULT_LIFETIME;
+    private int mAngle; // angle when facing north (0-360)
+    private float mDist; // distance from the middle of sonar (0f-1f)
+    private long mLifeTime = DEFAULT_LIFETIME; // duration of visibility in ms
 
     public SonarPoint(int angle, float dist) {
         mAngle = angle;
         mDist = dist;
     }
 
-    protected void setData(int angle, float dist) {
+    public void setPosition(int angle, float dist) {
         mAngle = angle;
         mDist = dist;
     }
 
-    public void detect(long currentMs, int currentAngle, int newScannerAngle) {
+    public void setAngle(int angle) {
+        mAngle = angle;
+    }
+
+    public int getAngle() {
+        return mAngle;
+    }
+
+    public void setDistance(float dist) {
+        mDist = dist;
+    }
+
+    public float getDistance() {
+        return mDist;
+    }
+
+    public void setLifeTime(long lifeTime) {
+        mLifeTime = lifeTime;
+    }
+
+    public long getLifeTime() {
+        return mLifeTime;
+    }
+
+    public float getVisibility() {
+        return mVisibility;
+    }
+
+    public boolean isVisible() {
+        return mVisibility > 0 && mDetectedDist <= 1f;
+    }
+
+    public int getDetectedAngle() {
+        return mDetectedAngle;
+    }
+
+    public float getDetectedDist() {
+        return mDetectedDist;
+    }
+
+    public final void detect(long currentMs, int currentAngle, int newScannerAngle) {
         int newAngle = mAngle + currentAngle;
         int lastDiff = SonarUtils.getAngleDiff(
                 SonarUtils.getOffsetAngle(mLastScannerAngle),
@@ -56,22 +99,6 @@ public class SonarPoint {
         mVisibility = 1 - Math.min(1, (float) (currentMs - mDetectionTime) / mLifeTime);
         mLastScannerAngle = newScannerAngle;
         mLastAngle = newAngle;
-    }
-
-    public float getVisibility() {
-        return mVisibility;
-    }
-
-    public boolean isVisible() {
-        return mVisibility > 0;
-    }
-
-    public int getDetectedAngle() {
-        return mDetectedAngle;
-    }
-
-    public float getDetectedDist() {
-        return mDetectedDist;
     }
 
 }

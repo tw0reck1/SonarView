@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
 
     protected List<SonarPoint> getRandomSonarPoints() {
         Random random = new Random();
-        int count = random.nextInt(10)+3;
+        int count = random.nextInt(12) + 6;
 
         List<SonarPoint> result = new ArrayList<>();
         for (int i = 0; i < count; i++) {
