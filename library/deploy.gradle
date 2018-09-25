@@ -1,0 +1,32 @@
+String deployTaskGroup = "deploy"
+
+String projectNameCapitalized = ""
+String[] nameParts = project.name.split("-")
+for (int i = 0; i < nameParts.length; i++) {
+    projectNameCapitalized += nameParts[i].capitalize()
+}
+
+String baseTaskName = "deploy${projectNameCapitalized}"
+String baseOutputDir = "${rootProject.projectDir.absolutePath}/aar"
+
+android.libraryVariants.all { variant ->
+
+    String variantName = "${variant.name.capitalize()}"
+
+    String deployAarTaskName = "${baseTaskName}${variantName}"
+    String dependencyTaskName = "assemble${variantName}"
+
+    String sourceAarFolder = "${buildDir.getPath()}/outputs/aar/"
+    String sourceAarName = "${project.name}-${variant.name}.aar"
+
+    String targetAarFolder = "${baseOutputDir}/${variant.name}/"
+    String targetAarName = "${rootProject.name}.aar"
+
+    task(deployAarTaskName, dependsOn: dependencyTaskName, type: Copy) {
+        from(sourceAarFolder)
+        into(targetAarFolder)
+        include(sourceAarName)
+        rename(sourceAarName, targetAarName)
+    }.group = deployTaskGroup;
+
+}

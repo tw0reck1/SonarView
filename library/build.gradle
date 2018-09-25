@@ -21,3 +21,7 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
 }
+
+if (file("./deploy.gradle").exists()) {
+    apply from: './deploy.gradle'
+}
