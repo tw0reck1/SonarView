@@ -14,7 +14,8 @@
         android:layout_height="0dp"
         android:layout_weight="2"
         android:padding="12dp"
-        app:sv_color="#0f0"/>
+        app:sv_color="#0f0"
+        app:sv_outerBorder="false"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -59,7 +60,8 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            app:sv_color="#0ff"/>
+            app:sv_color="#0ff"
+            app:sv_outerBorder="false"/>
 
         <tw0reck1.sonar.SonarView
             android:id="@+id/sonarview6"

@@ -2,5 +2,6 @@
 <resources>
     <declare-styleable name="SonarView">
         <attr name="sv_color" format="color"/>
+        <attr name="sv_outerBorder" format="boolean"/>
     </declare-styleable>
 </resources>

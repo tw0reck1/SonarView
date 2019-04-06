@@ -41,6 +41,8 @@ public class SonarView extends RotaryView {
             POINT_GRADIENT_START_MASK = 0xffffffff,
             POINT_GRADIENT_END_MASK = 0x7fffffff;
 
+    private static final boolean DEFAULT_OUTER_BORDER = true;
+
     private static final int
             LINE_COUNT = 12,
             LINE_ANGLE = 360 / LINE_COUNT,
@@ -61,6 +63,8 @@ public class SonarView extends RotaryView {
     protected int mArcColor = DEFAULT_COLOR & ARC_MASK;
     protected int mPointGradientStartColor = DEFAULT_COLOR & POINT_GRADIENT_START_MASK;
     protected int mPointGradientEndColor = DEFAULT_COLOR & POINT_GRADIENT_END_MASK;
+
+    protected boolean mOuterBorder;
 
     public SonarView(Context context) {
         super(context);
@@ -84,6 +88,7 @@ public class SonarView extends RotaryView {
                 R.styleable.SonarView, defStyleAttr, 0);
 
         mColor = array.getColor(R.styleable.SonarView_sv_color, DEFAULT_COLOR);
+        mOuterBorder = array.getBoolean(R.styleable.SonarView_sv_outerBorder, DEFAULT_OUTER_BORDER);
 
         array.recycle();
     }
@@ -253,7 +258,9 @@ public class SonarView extends RotaryView {
         thinStrokePaint.setStyle(Paint.Style.STROKE);
         thinStrokePaint.setStrokeWidth(radius / 300);
 
-        circleCanvas.drawCircle(centerX, centerY, radius, strokePaint);
+        if (mOuterBorder) {
+            circleCanvas.drawCircle(centerX, centerY, radius, strokePaint);
+        }
         circleCanvas.drawCircle(centerX, centerY, radius * 0.8f, thinStrokePaint);
         circleCanvas.drawCircle(centerX, centerY, radius * 0.64f, thinStrokePaint);
         circleCanvas.drawCircle(centerX, centerY, radius * 0.48f, thinStrokePaint);
