@@ -15,6 +15,7 @@
  */
 package tw0reck1.sonar;
 
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
@@ -28,6 +29,7 @@ import android.graphics.RectF;
 import android.graphics.Shader;
 import android.graphics.SweepGradient;
 import android.util.AttributeSet;
+import android.view.animation.LinearInterpolator;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -47,8 +49,9 @@ public class SonarView extends RotaryView {
             LINE_COUNT = 12,
             LINE_ANGLE = 360 / LINE_COUNT,
             SHORT_LINE_COUNT = 72,
-            SHORT_LINE_ANGLE = 360 / SHORT_LINE_COUNT,
-            DEFAULT_SCANNER_ROTATION_ANGLE = 4;
+            SHORT_LINE_ANGLE = 360 / SHORT_LINE_COUNT;
+
+    private static final long DEFAULT_SCANNER_ROTATION_DURATION = 1250L;
 
     private Paint mPointPaint = new Paint(Paint.ANTI_ALIAS_FLAG),
             mArcPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -136,26 +139,35 @@ public class SonarView extends RotaryView {
     }
 
     @Override
+    protected void onFinishInflate() {
+        super.onFinishInflate();
+
+        startAnimation();
+    }
+
+    private void startAnimation() {
+        ValueAnimator animator = ValueAnimator.ofInt(0, 360);
+        animator.setDuration(DEFAULT_SCANNER_ROTATION_DURATION);
+        animator.setRepeatMode(ValueAnimator.RESTART);
+        animator.setRepeatCount(ValueAnimator.INFINITE);
+        animator.setInterpolator(new LinearInterpolator());
+        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator anim) {
+                mScannerAngle = (int) anim.getAnimatedValue();
+
+                updateAngle();
+                detectPoints();
+
+                invalidate();
+            }
+        });
+        animator.start();
+    }
+
+    @Override
     protected void onDraw(Canvas canvas) {
-        update();
-
         drawSonar(canvas);
-
-        invalidate();
-    }
-
-    protected void update() {
-        updateAngle();
-
-        mScannerAngle = (mScannerAngle + getScannerRotationAngle()) % 360;
-
-        detectPoints();
-    }
-
-    protected int getScannerRotationAngle() {
-        return isPressed()
-                ? 2 * DEFAULT_SCANNER_ROTATION_ANGLE
-                : DEFAULT_SCANNER_ROTATION_ANGLE;
     }
 
     protected void detectPoints() {
