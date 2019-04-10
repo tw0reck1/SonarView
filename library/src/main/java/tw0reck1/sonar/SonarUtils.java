@@ -17,7 +17,7 @@ package tw0reck1.sonar;
 
 import android.graphics.PointF;
 
-public class SonarUtils {
+class SonarUtils {
 
     private SonarUtils() {}
 
@@ -50,6 +50,10 @@ public class SonarUtils {
         float resultY = (float) (radius * Math.sin((angle - 90f) * Math.PI / 180f)) + y;
 
         return new PointF(resultX, resultY);
+    }
+
+    static int clamp(int value, int min, int max) {
+        return Math.min(Math.max(min, value), max);
     }
 
 }

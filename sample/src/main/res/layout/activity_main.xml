@@ -29,14 +29,16 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            app:sv_color="#f00"/>
+            app:sv_color="#f00"
+            app:sv_loopDuration="0"/>
 
         <tw0reck1.sonar.SonarView
             android:id="@+id/sonarview3"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            app:sv_color="#fff"/>
+            app:sv_color="#fff"
+            app:sv_loopDuration="500"/>
 
     </LinearLayout>
 
@@ -53,7 +55,8 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:layout_marginRight="6dp"
-            app:sv_color="#ff0"/>
+            app:sv_color="#ff0"
+            app:sv_loopDuration="60000"/>
 
         <tw0reck1.sonar.SonarView
             android:id="@+id/sonarview5"
@@ -69,7 +72,8 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:layout_marginLeft="6dp"
-            app:sv_color="#f0f"/>
+            app:sv_color="#f0f"
+            app:sv_loopDuration="5000"/>
 
     </LinearLayout>
 

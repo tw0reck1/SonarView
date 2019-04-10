@@ -3,5 +3,6 @@
     <declare-styleable name="SonarView">
         <attr name="sv_color" format="color"/>
         <attr name="sv_outerBorder" format="boolean"/>
+        <attr name="sv_loopDuration" format="integer"/>
     </declare-styleable>
 </resources>

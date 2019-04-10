@@ -51,7 +51,9 @@ public class SonarView extends RotaryView {
             SHORT_LINE_COUNT = 72,
             SHORT_LINE_ANGLE = 360 / SHORT_LINE_COUNT;
 
-    private static final long DEFAULT_SCANNER_ROTATION_DURATION = 1250L;
+    private static final int MIN_LOOP_DURATION = 250;
+    private static final int DEFAULT_LOOP_DURATION = 1250;
+    private static final int MAX_LOOP_DURATION = Integer.MAX_VALUE;
 
     private Paint mPointPaint = new Paint(Paint.ANTI_ALIAS_FLAG),
             mArcPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -68,6 +70,8 @@ public class SonarView extends RotaryView {
     protected int mPointGradientEndColor = DEFAULT_COLOR & POINT_GRADIENT_END_MASK;
 
     protected boolean mOuterBorder;
+
+    protected int mLoopDuration = DEFAULT_LOOP_DURATION;
 
     public SonarView(Context context) {
         super(context);
@@ -92,6 +96,8 @@ public class SonarView extends RotaryView {
 
         mColor = array.getColor(R.styleable.SonarView_sv_color, DEFAULT_COLOR);
         mOuterBorder = array.getBoolean(R.styleable.SonarView_sv_outerBorder, DEFAULT_OUTER_BORDER);
+        mLoopDuration = SonarUtils.clamp(array.getInt(R.styleable.SonarView_sv_loopDuration,
+                DEFAULT_LOOP_DURATION), MIN_LOOP_DURATION, MAX_LOOP_DURATION);
 
         array.recycle();
     }
@@ -147,7 +153,7 @@ public class SonarView extends RotaryView {
 
     private void startAnimation() {
         ValueAnimator animator = ValueAnimator.ofInt(0, 360);
-        animator.setDuration(DEFAULT_SCANNER_ROTATION_DURATION);
+        animator.setDuration(mLoopDuration);
         animator.setRepeatMode(ValueAnimator.RESTART);
         animator.setRepeatCount(ValueAnimator.INFINITE);
         animator.setInterpolator(new LinearInterpolator());
