@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
+import tw0reck1.sonar.PlainSonarView;
 import tw0reck1.sonar.SonarPoint;
 import tw0reck1.sonar.SonarView;
 
@@ -19,13 +20,20 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        List<PlainSonarView> plainSonarsList = Arrays.asList(
+                (PlainSonarView) findViewById(R.id.plainsonarview1),
+                (PlainSonarView) findViewById(R.id.plainsonarview2)
+        );
+
+        for (PlainSonarView sonar : plainSonarsList) {
+            sonar.setPoints(getRandomSonarPoints());
+        }
+
         List<SonarView> sonarsList = Arrays.asList(
                 (SonarView) findViewById(R.id.sonarview1),
                 (SonarView) findViewById(R.id.sonarview2),
                 (SonarView) findViewById(R.id.sonarview3),
-                (SonarView) findViewById(R.id.sonarview4),
-                (SonarView) findViewById(R.id.sonarview5),
-                (SonarView) findViewById(R.id.sonarview6)
+                (SonarView) findViewById(R.id.sonarview4)
         );
 
         for (SonarView sonar : sonarsList) {

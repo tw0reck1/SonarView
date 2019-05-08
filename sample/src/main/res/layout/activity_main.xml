@@ -8,14 +8,13 @@
     android:orientation="vertical"
     tools:context="tw0reck1.sonarapp.MainActivity">
 
-    <tw0reck1.sonar.SonarView
-        android:id="@+id/sonarview1"
+    <tw0reck1.sonar.PlainSonarView
+        android:id="@+id/plainsonarview1"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="2"
         android:padding="12dp"
-        app:sv_color="#0f0"
-        app:sv_outerBorder="false"/>
+        app:sv_color="#0f0"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -25,7 +24,7 @@
         android:orientation="horizontal">
 
         <tw0reck1.sonar.SonarView
-            android:id="@+id/sonarview2"
+            android:id="@+id/sonarview1"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -33,7 +32,7 @@
             app:sv_loopDuration="0"/>
 
         <tw0reck1.sonar.SonarView
-            android:id="@+id/sonarview3"
+            android:id="@+id/sonarview2"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -50,30 +49,31 @@
         android:orientation="horizontal">
 
         <tw0reck1.sonar.SonarView
-            android:id="@+id/sonarview4"
+            android:id="@+id/sonarview3"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:layout_marginRight="6dp"
             app:sv_color="#ff0"
-            app:sv_loopDuration="60000"/>
+            app:sv_loopDuration="60000"
+            app:sv_outerBorder="false"/>
 
-        <tw0reck1.sonar.SonarView
-            android:id="@+id/sonarview5"
+        <tw0reck1.sonar.PlainSonarView
+            android:id="@+id/plainsonarview2"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            app:sv_color="#0ff"
-            app:sv_outerBorder="false"/>
+            app:sv_color="#0ff"/>
 
         <tw0reck1.sonar.SonarView
-            android:id="@+id/sonarview6"
+            android:id="@+id/sonarview4"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:layout_marginLeft="6dp"
             app:sv_color="#f0f"
-            app:sv_loopDuration="5000"/>
+            app:sv_loopDuration="5000"
+            app:sv_outerBorder="false"/>
 
     </LinearLayout>
 
