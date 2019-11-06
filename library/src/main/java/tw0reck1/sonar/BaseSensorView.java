@@ -71,15 +71,21 @@ abstract class BaseSensorView extends View implements
         int width;
         int height;
 
-        int desiredSize = Math.min(widthSize, heightSize);
+        int horizontalPadding = getPaddingLeft() - getPaddingRight();
+        int verticalPadding = getPaddingTop() - getPaddingBottom();
+
+        int availableWidthSize = widthSize - horizontalPadding;
+        int availableHeightSize = heightSize - verticalPadding;
+
+        int availableSize = Math.min(availableWidthSize, availableHeightSize);
 
         if (widthMode == MeasureSpec.EXACTLY) {
             width = widthSize;
-        } else width = desiredSize;
+        } else width = availableSize + horizontalPadding;
 
         if (heightMode == MeasureSpec.EXACTLY) {
             height = heightSize;
-        } else height = desiredSize;
+        } else height = availableSize + verticalPadding;
 
         setMeasuredDimension(width, height);
     }

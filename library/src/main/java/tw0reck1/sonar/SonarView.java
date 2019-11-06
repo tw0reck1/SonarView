@@ -185,21 +185,21 @@ public class SonarView extends RotaryView {
     }
 
     protected void drawSonar(Canvas canvas) {
-        float width = canvas.getWidth(), height = canvas.getHeight(),
-                drawWidth = width - getPaddingLeft() - getPaddingRight(),
-                drawHeight = height - getPaddingTop() - getPaddingBottom(),
-                centerX = width / 2f, centerY = height / 2f,
-                radius = Math.min(drawWidth, drawHeight) / 2f;
+        float radius = mSonarBitmap.getWidth() / 2f;
 
-        canvas.drawBitmap(mSonarBitmap, 0, 0, null);
-        drawPoints(canvas, width, height, centerX, centerY, radius);
-        drawArc(canvas, width, height, centerX, centerY, radius);
+        canvas.drawBitmap(mSonarBitmap, getPaddingLeft(), getPaddingTop(), null);
+
+        drawPoints(canvas, radius, radius, radius);
+        drawArc(canvas, radius, radius, radius);
     }
 
-    private void drawPoints(Canvas canvas, float width, float height, float centerX, float centerY, float radius) {
+    private void drawPoints(Canvas canvas, float centerX, float centerY, float radius) {
         if (!hasSensors()) return;
 
         float circleBaseRadius = Math.max(1, radius / 50);
+
+        int paddingLeft = getPaddingLeft();
+        int paddingTop = getPaddingTop();
 
         for (SonarPoint point : mPointsList) {
             if (!point.isVisible()) continue;
@@ -216,55 +216,63 @@ public class SonarView extends RotaryView {
                     mPointGradientStartColor, mPointGradientEndColor, Shader.TileMode.CLAMP));
             mPointPaint.setAlpha((int) (point.getVisibility() * 255));
 
-            canvas.drawCircle(circleCenter.x, circleCenter.y, circleRadius, mPointPaint);
+            canvas.drawCircle(paddingLeft + circleCenter.x, paddingTop + circleCenter.y,
+                    circleRadius, mPointPaint);
         }
     }
 
-    private void drawArc(Canvas canvas, float width, float height, float centerX, float centerY, float radius){
+    private void drawArc(Canvas canvas, float centerX, float centerY, float radius) {
         if (!hasSensors()) return;
-
-        radius *= 0.8f;
 
         int degree = -90 + mScannerAngle;
         int offset = 360;
         int transparentArc = 0x00ffffff & mArcColor;
 
-        Shader gradient = new SweepGradient(centerX, centerY,
+        int paddingLeft = getPaddingLeft();
+        int paddingTop = getPaddingTop();
+
+        Shader gradient = new SweepGradient(paddingLeft + centerX, paddingTop + centerY,
                 new int[] {transparentArc, transparentArc, transparentArc,
                         transparentArc, transparentArc, mArcColor}, null);
 
         Matrix gradientMatrix = new Matrix();
-        gradientMatrix.preRotate(degree - 1, centerX, centerY);
+        gradientMatrix.preRotate(degree - 1, paddingLeft + centerX, paddingTop + centerY);
         gradient.setLocalMatrix(gradientMatrix);
 
         mArcPaint.setShader(gradient);
 
-        final RectF rect = new RectF(centerX - radius, centerY - radius,
-                centerX + radius, centerY + radius);
+        final RectF rect = new RectF(paddingLeft, paddingTop,
+                paddingLeft + 2f * radius, paddingTop + 2f * radius);
+
+        float inset = 0.2f * radius;
+        rect.inset(inset, inset);
 
         canvas.drawArc(rect, degree, offset, true, mArcPaint);
     }
 
     private Bitmap getSonarBitmap(int width, int height) {
-        float centerX = width / 2f, centerY = height / 2f,
-                drawWidth = width - getPaddingLeft() - getPaddingRight(),
+        float drawWidth = width - getPaddingLeft() - getPaddingRight(),
                 drawHeight = height - getPaddingTop() - getPaddingBottom(),
-                radius = Math.min(drawWidth, drawHeight) / 2f;
+                diameter = Math.min(drawWidth, drawHeight),
+                radius = diameter / 2f,
+                center = radius;
 
-        Bitmap result = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        int bitmapSize = Math.round(diameter);
+
+        Bitmap result = Bitmap.createBitmap(bitmapSize, bitmapSize, Bitmap.Config.ARGB_8888);
         Canvas circleCanvas = new Canvas(result);
 
         Paint backgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         backgroundPaint.setColor(Color.BLACK);
         backgroundPaint.setStyle(Paint.Style.FILL);
 
-        circleCanvas.drawCircle(centerX, centerY, radius, backgroundPaint);
+        circleCanvas.drawCircle(center, center, radius, backgroundPaint);
 
         Paint innerBackgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         innerBackgroundPaint.setColor(mColor & INNER_CIRCLE_MASK);
         innerBackgroundPaint.setStyle(Paint.Style.FILL);
 
-        circleCanvas.drawCircle(centerX, centerY, radius * 0.8f, innerBackgroundPaint);
+        circleCanvas.drawCircle(center, center, radius * 0.8f, innerBackgroundPaint);
 
         Paint strokePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         strokePaint.setColor(mColor);
@@ -277,18 +285,18 @@ public class SonarView extends RotaryView {
         thinStrokePaint.setStrokeWidth(radius / 300);
 
         if (mOuterBorder) {
-            circleCanvas.drawCircle(centerX, centerY, radius, strokePaint);
+            circleCanvas.drawCircle(center, center, radius - strokePaint.getStrokeWidth() / 2f, strokePaint);
         }
-        circleCanvas.drawCircle(centerX, centerY, radius * 0.8f, thinStrokePaint);
-        circleCanvas.drawCircle(centerX, centerY, radius * 0.64f, thinStrokePaint);
-        circleCanvas.drawCircle(centerX, centerY, radius * 0.48f, thinStrokePaint);
-        circleCanvas.drawCircle(centerX, centerY, radius * 0.32f, thinStrokePaint);
-        circleCanvas.drawCircle(centerX, centerY, radius * 0.16f, thinStrokePaint);
+        circleCanvas.drawCircle(center, center, radius * 0.8f, thinStrokePaint);
+        circleCanvas.drawCircle(center, center, radius * 0.64f, thinStrokePaint);
+        circleCanvas.drawCircle(center, center, radius * 0.48f, thinStrokePaint);
+        circleCanvas.drawCircle(center, center, radius * 0.32f, thinStrokePaint);
+        circleCanvas.drawCircle(center, center, radius * 0.16f, thinStrokePaint);
 
         for (int i = 0; i < LINE_COUNT; i++) {
             int angle = i * LINE_ANGLE;
-            PointF start = SonarUtils.getPointOnCircle(centerX, centerY, radius * 0.8f, angle),
-                    end = SonarUtils.getPointOnCircle(centerX, centerY, 0f, angle);
+            PointF start = SonarUtils.getPointOnCircle(center, center, radius * 0.8f, angle),
+                    end = SonarUtils.getPointOnCircle(center, center, 0f, angle);
 
             circleCanvas.drawLine(start.x, start.y, end.x, end.y,
                     (i % (LINE_COUNT / 4) == 0) ? strokePaint : thinStrokePaint);
@@ -297,9 +305,9 @@ public class SonarView extends RotaryView {
         for (int i = 0; i < SHORT_LINE_COUNT; i++) {
             int angle = i * SHORT_LINE_ANGLE;
             boolean longerLine = (i % 3 == 0);
-            PointF start = SonarUtils.getPointOnCircle(centerX, centerY,
+            PointF start = SonarUtils.getPointOnCircle(center, center,
                     radius * (longerLine ? 0.83f : 0.81f), angle),
-                    end = SonarUtils.getPointOnCircle(centerX, centerY,
+                    end = SonarUtils.getPointOnCircle(center, center,
                             radius * (longerLine ? 0.75f : 0.78f), angle);
 
             circleCanvas.drawLine(start.x, start.y, end.x, end.y,
@@ -325,7 +333,7 @@ public class SonarView extends RotaryView {
         for (int i = 0; i < 360 / count; i++) {
             int degree = i * count;
             usedPaint = (degree % 90 == 0) ? fontPaint : smallFontPaint;
-            PointF start = SonarUtils.getPointOnCircle(centerX, centerY, radius * 0.9f, degree);
+            PointF start = SonarUtils.getPointOnCircle(center, center, radius * 0.9f, degree);
 
             circleCanvas.drawText(Integer.toString(degree), start.x, start.y
                     - ((usedPaint.descent() + usedPaint.ascent()) / 2), usedPaint);
