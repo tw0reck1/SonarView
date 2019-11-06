@@ -16,18 +16,23 @@
 package tw0reck1.sonar;
 
 import android.animation.ValueAnimator;
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
+import android.graphics.Outline;
 import android.graphics.Paint;
 import android.graphics.PointF;
 import android.graphics.RectF;
 import android.graphics.Shader;
 import android.graphics.SweepGradient;
+import android.os.Build;
 import android.util.AttributeSet;
+import android.view.View;
+import android.view.ViewOutlineProvider;
 import android.view.animation.LinearInterpolator;
 
 import java.util.Collection;
@@ -135,6 +140,10 @@ public class PlainSonarView extends RotaryView {
     @Override
     protected void onSizeChanged(int width, int height, int oldwidth, int oldheight) {
         mSonarBitmap = getSonarBitmap(width, height);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            setOutlineProvider(new PlainOutline(width, height));
+        }
     }
 
     @Override
@@ -285,6 +294,25 @@ public class PlainSonarView extends RotaryView {
         }
 
         return result;
+    }
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    private class PlainOutline extends ViewOutlineProvider {
+
+        private final int width;
+        private final int height;
+
+        private PlainOutline(int width, int height) {
+            this.width = width;
+            this.height = height;
+        }
+
+        @Override
+        public void getOutline(View view, Outline outline) {
+            outline.setOval(view.getPaddingLeft(), view.getPaddingTop(),
+                    width - getPaddingRight(), height - getPaddingBottom());
+        }
+
     }
 
 }
