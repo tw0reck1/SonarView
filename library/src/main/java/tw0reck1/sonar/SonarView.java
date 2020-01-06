@@ -43,7 +43,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-public class SonarView extends RotaryView {
+public class SonarView extends RotaryView implements Sonar {
 
     private static final int DEFAULT_COLOR = 0xff03CC02,
             INNER_CIRCLE_MASK = 0x3fffffff,
@@ -124,17 +124,20 @@ public class SonarView extends RotaryView {
         mPointPaint.setStyle(Paint.Style.FILL);
     }
 
+    @Override
     public void setPoints(Collection<SonarPoint> points) {
         mPointsList.clear();
         mPointsList.addAll(points);
     }
 
+    @Override
     public void addPoints(SonarPoint...points) {
         for (SonarPoint point : points) {
             mPointsList.add(point);
         }
     }
 
+    @Override
     public void setColor(int color) {
         mColor = color;
         mArcColor = mColor & ARC_MASK;
