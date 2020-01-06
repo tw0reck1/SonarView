@@ -281,6 +281,8 @@ public class SonarView extends RotaryView implements Sonar {
 
         int bitmapSize = Math.round(diameter);
 
+        if (bitmapSize <= 0) return null;
+
         Bitmap result = Bitmap.createBitmap(bitmapSize, bitmapSize, Bitmap.Config.ARGB_8888);
         Canvas circleCanvas = new Canvas(result);
 
