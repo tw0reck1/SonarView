@@ -197,6 +197,8 @@ public class SonarView extends RotaryView {
     }
 
     protected void drawSonar(Canvas canvas) {
+        if (mSonarBitmap == null) return;
+
         float radius = mSonarBitmap.getWidth() / 2f;
 
         canvas.drawBitmap(mSonarBitmap, getPaddingLeft(), getPaddingTop(), null);
