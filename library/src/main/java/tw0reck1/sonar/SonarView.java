@@ -32,8 +32,11 @@ import android.graphics.Shader;
 import android.graphics.SweepGradient;
 import android.os.Build;
 import android.util.AttributeSet;
+import android.view.Display;
+import android.view.Surface;
 import android.view.View;
 import android.view.ViewOutlineProvider;
+import android.view.WindowManager;
 import android.view.animation.LinearInterpolator;
 
 import java.util.Collection;
@@ -198,8 +201,13 @@ public class SonarView extends RotaryView {
 
         canvas.drawBitmap(mSonarBitmap, getPaddingLeft(), getPaddingTop(), null);
 
+        canvas.save();
+        canvas.rotate(-getScreenRotation(), getPaddingLeft() + radius, getPaddingTop() + radius);
+
         drawPoints(canvas, radius, radius, radius);
         drawArc(canvas, radius, radius, radius);
+
+        canvas.restore();
     }
 
     private void drawPoints(Canvas canvas, float centerX, float centerY, float radius) {
@@ -349,6 +357,23 @@ public class SonarView extends RotaryView {
         }
 
         return result;
+    }
+
+    private int getScreenRotation() {
+        Display display = ((WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE))
+                .getDefaultDisplay();
+
+        switch (display.getRotation()) {
+            case Surface.ROTATION_270:
+                return 270;
+            case Surface.ROTATION_180:
+                return 180;
+            case Surface.ROTATION_90:
+                return 90;
+            case Surface.ROTATION_0:
+            default:
+                return 0;
+        }
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
