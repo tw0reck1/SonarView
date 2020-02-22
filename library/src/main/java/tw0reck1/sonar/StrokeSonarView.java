@@ -27,6 +27,7 @@ import android.graphics.Outline;
 import android.graphics.Paint;
 import android.graphics.PointF;
 import android.graphics.RadialGradient;
+import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Shader;
 import android.graphics.SweepGradient;
@@ -409,8 +410,16 @@ public class StrokeSonarView extends RotaryView implements Sonar {
 
         @Override
         public void getOutline(View view, Outline outline) {
-            outline.setOval(view.getPaddingLeft(), view.getPaddingTop(),
+            Rect bounds = new Rect(view.getPaddingLeft(), view.getPaddingTop(),
                     width - getPaddingRight(), height - getPaddingBottom());
+
+            float diameter = Math.min(bounds.width(), bounds.height());
+            float radius = diameter / 2f;
+
+            int inset = Math.round(0.2f * radius);
+            bounds.inset(inset, inset);
+
+            outline.setOval(bounds);
         }
 
     }
