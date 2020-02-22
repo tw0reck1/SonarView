@@ -113,7 +113,7 @@ public class StrokeSonarView extends RotaryView implements Sonar {
         mArcPaint.setStyle(Paint.Style.STROKE);
 
         mPointPaint.setColor(mColor);
-        mPointPaint.setStyle(Paint.Style.STROKE);
+        mPointPaint.setStyle(Paint.Style.FILL);
     }
 
     @Override
@@ -235,7 +235,7 @@ public class StrokeSonarView extends RotaryView implements Sonar {
         for (SonarPoint point : mPointsList) {
             if (!point.isVisible()) continue;
 
-            float sizeRatio = 0.75f + ((2.25f * (1f - point.getVisibility())));
+            float sizeRatio = 1f + ((2.5f * (1f - point.getVisibility())));
             float circleRadius = circleBaseRadius * sizeRatio;
 
             PointF circleCenter = SonarUtils.getPointOnCircle(centerX, centerY,

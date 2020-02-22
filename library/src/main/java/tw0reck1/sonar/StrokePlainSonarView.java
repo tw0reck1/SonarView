@@ -112,7 +112,7 @@ public class StrokePlainSonarView extends RotaryView implements Sonar {
 
         mPointColor = mColor & POINT_MASK;
         mPointPaint.setColor(mColor);
-        mPointPaint.setStyle(Paint.Style.STROKE);
+        mPointPaint.setStyle(Paint.Style.FILL);
     }
 
     @Override
@@ -227,7 +227,7 @@ public class StrokePlainSonarView extends RotaryView implements Sonar {
     private void drawPoints(Canvas canvas, float centerX, float centerY, float radius) {
         if (!hasSensors()) return;
 
-        float circleRadius = Math.max(1, radius / 20);
+        float circleRadius = Math.max(1, radius / 16);
 
         int paddingLeft = getPaddingLeft();
         int paddingTop = getPaddingTop();
