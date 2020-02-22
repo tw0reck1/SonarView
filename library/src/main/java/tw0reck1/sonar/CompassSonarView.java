@@ -21,6 +21,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Outline;
 import android.graphics.Paint;
@@ -332,6 +333,12 @@ public class CompassSonarView extends RotaryView implements Sonar {
 
         Bitmap result = Bitmap.createBitmap(bitmapSize, bitmapSize, Bitmap.Config.ARGB_8888);
         Canvas circleCanvas = new Canvas(result);
+
+        Paint backgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        backgroundPaint.setColor(Color.BLACK);
+        backgroundPaint.setStyle(Paint.Style.FILL);
+
+        circleCanvas.drawCircle(center, center, radius * 0.75f, backgroundPaint);
 
         Paint innerBackgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         innerBackgroundPaint.setColor(mColor & INNER_CIRCLE_MASK);
