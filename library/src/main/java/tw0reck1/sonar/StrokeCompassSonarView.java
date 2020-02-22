@@ -21,15 +21,10 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Matrix;
 import android.graphics.Outline;
 import android.graphics.Paint;
 import android.graphics.PointF;
-import android.graphics.RadialGradient;
 import android.graphics.Rect;
-import android.graphics.RectF;
-import android.graphics.Shader;
-import android.graphics.SweepGradient;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.view.Display;
@@ -48,7 +43,7 @@ public class StrokeCompassSonarView extends RotaryView implements Sonar {
     private static final String[] DIRECTIONS = {"N", "NE", "E", "SE", "S", "SW", "W", "NW"};
 
     private static final int DEFAULT_COLOR = 0xff03CC02,
-            ARC_MASK = 0xbfffffff;
+            ARC_MASK = 0xffffffff;
 
     private static final int
             LINE_COUNT = 24,
@@ -112,7 +107,8 @@ public class StrokeCompassSonarView extends RotaryView implements Sonar {
         setClickable(true);
 
         mArcColor = mColor & ARC_MASK;
-        mArcPaint.setStyle(Paint.Style.FILL);
+        mArcPaint.setColor(mArcColor);
+        mArcPaint.setStyle(Paint.Style.STROKE);
 
         mPointPaint.setColor(mColor);
         mPointPaint.setStyle(Paint.Style.STROKE);
@@ -148,6 +144,7 @@ public class StrokeCompassSonarView extends RotaryView implements Sonar {
         mPointPaint.setColor(mColor);
         mFontPaint.setColor(mColor);
         mSmallFontPaint.setColor(mColor);
+        mArcPaint.setColor(mArcColor);
         if (mSonarBitmap != null) {
             mSonarBitmap = getSonarBitmap(getWidth(), getHeight());
         }
@@ -162,6 +159,7 @@ public class StrokeCompassSonarView extends RotaryView implements Sonar {
 
             mFontPaint.setTextSize(radius / 8);
             mSmallFontPaint.setTextSize(radius / 12);
+            mArcPaint.setStrokeWidth(radius / 40);
             mPointPaint.setStrokeWidth(radius / 50);
         }
 
@@ -281,30 +279,10 @@ public class StrokeCompassSonarView extends RotaryView implements Sonar {
     private void drawArc(Canvas canvas, float centerX, float centerY, float radius) {
         if (!hasSensors()) return;
 
-        int degree = -90 + mScannerAngle;
-        int offset = 360;
-        int transparentArc = 0x00ffffff & mArcColor;
+        PointF arcPoint = SonarUtils.getPointOnCircle(centerX, centerY,
+                (radius * 0.75f), mScannerAngle);
 
-        int paddingLeft = getPaddingLeft();
-        int paddingTop = getPaddingTop();
-
-        Shader gradient = new SweepGradient(paddingLeft + centerX, paddingTop + centerY,
-                new int[] {transparentArc, transparentArc, transparentArc,
-                        transparentArc, transparentArc, mArcColor}, null);
-
-        Matrix gradientMatrix = new Matrix();
-        gradientMatrix.preRotate(degree - 1, paddingLeft + centerX, paddingTop + centerY);
-        gradient.setLocalMatrix(gradientMatrix);
-
-        mArcPaint.setShader(gradient);
-
-        final RectF rect = new RectF(paddingLeft, paddingTop,
-                paddingLeft + 2f * radius, paddingTop + 2f * radius);
-
-        float inset = 0.25f * radius;
-        rect.inset(inset, inset);
-
-        canvas.drawArc(rect, degree, offset, true, mArcPaint);
+        canvas.drawLine(centerX, centerY, arcPoint.x, arcPoint.y, mArcPaint);
     }
 
     private Bitmap getSonarBitmap(int width, int height) {
