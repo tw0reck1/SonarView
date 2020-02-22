@@ -26,6 +26,7 @@ import android.graphics.Outline;
 import android.graphics.Paint;
 import android.graphics.PointF;
 import android.graphics.RadialGradient;
+import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Shader;
 import android.graphics.SweepGradient;
@@ -174,7 +175,7 @@ public class CompassSonarView extends RotaryView implements Sonar {
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            setOutlineProvider(new SonarOutline(width, height));
+            setOutlineProvider(new CompassOutline(width, height));
         }
     }
 
@@ -394,20 +395,28 @@ public class CompassSonarView extends RotaryView implements Sonar {
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    private class SonarOutline extends ViewOutlineProvider {
+    private class CompassOutline extends ViewOutlineProvider {
 
         private final int width;
         private final int height;
 
-        private SonarOutline(int width, int height) {
+        private CompassOutline(int width, int height) {
             this.width = width;
             this.height = height;
         }
 
         @Override
         public void getOutline(View view, Outline outline) {
-            outline.setOval(view.getPaddingLeft(), view.getPaddingTop(),
+            Rect bounds = new Rect(view.getPaddingLeft(), view.getPaddingTop(),
                     width - getPaddingRight(), height - getPaddingBottom());
+
+            float diameter = Math.min(bounds.width(), bounds.height());
+            float radius = diameter / 2f;
+
+            int inset = Math.round(0.25f * radius);
+            bounds.inset(inset, inset);
+
+            outline.setOval(bounds);
         }
 
     }
