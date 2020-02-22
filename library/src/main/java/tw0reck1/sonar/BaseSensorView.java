@@ -32,6 +32,10 @@ abstract class BaseSensorView extends View implements
 
     private float[] mAccelerometerValues, mMagnetometerValues;
 
+    private float R[] = new float[9];
+    private float I[] = new float[9];
+    private float orientation[] = new float[3];
+
     public BaseSensorView(Context context) {
         super(context);
         initSensors();
@@ -125,13 +129,12 @@ abstract class BaseSensorView extends View implements
             mMagnetometerValues = event.values;
         }
         if (mAccelerometerValues != null && mMagnetometerValues != null) {
-            float R[] = new float[9];
-            float I[] = new float[9];
-
             if (SensorManager.getRotationMatrix(R, I, mAccelerometerValues, mMagnetometerValues)) {
-                float orientation[] = new float[3];
                 SensorManager.getOrientation(R, orientation);
-                onOrientationChanged(orientation[0], orientation[1], orientation[2]);
+
+                float azimuth = (float) - Math.atan2(R[3], R[0]);
+
+                onOrientationChanged(azimuth, orientation[1], orientation[2]);
             }
         }
     }
