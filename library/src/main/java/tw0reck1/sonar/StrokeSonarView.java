@@ -48,9 +48,7 @@ public class StrokeSonarView extends RotaryView implements Sonar {
 
     private static final int DEFAULT_COLOR = 0xff03CC02,
             INNER_CIRCLE_MASK = 0x3fffffff,
-            ARC_MASK = 0xbfffffff,
-            POINT_GRADIENT_START_MASK = 0xffffffff,
-            POINT_GRADIENT_END_MASK = 0x7fffffff;
+            ARC_MASK = 0xbfffffff;
 
     private static final boolean DEFAULT_OUTER_BORDER = true;
 
@@ -75,8 +73,6 @@ public class StrokeSonarView extends RotaryView implements Sonar {
 
     protected int mColor = DEFAULT_COLOR;
     protected int mArcColor = DEFAULT_COLOR & ARC_MASK;
-    protected int mPointGradientStartColor = DEFAULT_COLOR & POINT_GRADIENT_START_MASK;
-    protected int mPointGradientEndColor = DEFAULT_COLOR & POINT_GRADIENT_END_MASK;
 
     protected boolean mOuterBorder;
 
@@ -118,13 +114,10 @@ public class StrokeSonarView extends RotaryView implements Sonar {
         setClickable(true);
 
         mArcColor = mColor & ARC_MASK;
-        mPointGradientStartColor = mColor & POINT_GRADIENT_START_MASK;
-        mPointGradientEndColor = mColor & POINT_GRADIENT_END_MASK;
-
         mArcPaint.setStyle(Paint.Style.FILL);
 
         mPointPaint.setColor(mColor);
-        mPointPaint.setStyle(Paint.Style.FILL);
+        mPointPaint.setStyle(Paint.Style.STROKE);
     }
 
     @Override
@@ -144,8 +137,6 @@ public class StrokeSonarView extends RotaryView implements Sonar {
     public void setColor(int color) {
         mColor = color;
         mArcColor = mColor & ARC_MASK;
-        mPointGradientStartColor = mColor & POINT_GRADIENT_START_MASK;
-        mPointGradientEndColor = mColor & POINT_GRADIENT_END_MASK;
 
         mPointPaint.setColor(mColor);
         if (mSonarBitmap != null) {
@@ -156,6 +147,12 @@ public class StrokeSonarView extends RotaryView implements Sonar {
     @Override
     protected void onSizeChanged(int width, int height, int oldwidth, int oldheight) {
         mSonarBitmap = getSonarBitmap(width, height);
+
+        if (mSonarBitmap != null) {
+            float radius = mSonarBitmap.getWidth() / 2f;
+
+            mPointPaint.setStrokeWidth(radius / 60);
+        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             setOutlineProvider(new SonarOutline(width, height));
@@ -240,16 +237,13 @@ public class StrokeSonarView extends RotaryView implements Sonar {
         for (SonarPoint point : mPointsList) {
             if (!point.isVisible()) continue;
 
-            float sizeRatio = 1f + ((2.5f * (1f - point.getVisibility())));
+            float sizeRatio = 0.75f + ((2.25f * (1f - point.getVisibility())));
             float circleRadius = circleBaseRadius * sizeRatio;
 
             PointF circleCenter = SonarUtils.getPointOnCircle(centerX, centerY,
                     (radius * 0.8f - circleBaseRadius) * point.getDetectedDist(),
                     point.getDetectedAngle());
 
-            mPointPaint.setShader(new RadialGradient(
-                    circleCenter.x, circleCenter.y, 3.5f * circleBaseRadius,
-                    mPointGradientStartColor, mPointGradientEndColor, Shader.TileMode.CLAMP));
             mPointPaint.setAlpha((int) (point.getVisibility() * 255));
 
             canvas.drawCircle(paddingLeft + circleCenter.x, paddingTop + circleCenter.y,
