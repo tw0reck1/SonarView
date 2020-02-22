@@ -75,6 +75,8 @@ public class StrokePlainSonarView extends RotaryView implements Sonar {
 
     protected int mLoopDuration = DEFAULT_LOOP_DURATION;
 
+    private ValueAnimator mAnimator;
+
     public StrokePlainSonarView(Context context) {
         super(context);
         init();
@@ -159,12 +161,12 @@ public class StrokePlainSonarView extends RotaryView implements Sonar {
     }
 
     private void startAnimation() {
-        ValueAnimator animator = ValueAnimator.ofInt(0, 360);
-        animator.setDuration(mLoopDuration);
-        animator.setRepeatMode(ValueAnimator.RESTART);
-        animator.setRepeatCount(ValueAnimator.INFINITE);
-        animator.setInterpolator(new LinearInterpolator());
-        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+        mAnimator = ValueAnimator.ofInt(0, 360);
+        mAnimator.setDuration(mLoopDuration);
+        mAnimator.setRepeatMode(ValueAnimator.RESTART);
+        mAnimator.setRepeatCount(ValueAnimator.INFINITE);
+        mAnimator.setInterpolator(new LinearInterpolator());
+        mAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator anim) {
                 mScannerAngle = (int) anim.getAnimatedValue();
@@ -175,7 +177,18 @@ public class StrokePlainSonarView extends RotaryView implements Sonar {
                 invalidate();
             }
         });
-        animator.start();
+        mAnimator.start();
+    }
+
+    @Override
+    protected void onVisibilityChanged(View changedView, int visibility) {
+        if (mAnimator == null) return;
+
+        if (getVisibility() == VISIBLE) {
+            mAnimator.start();
+        } else {
+            mAnimator.cancel();
+        }
     }
 
     @Override
