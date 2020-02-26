@@ -252,10 +252,14 @@ public class StrokeSonarView extends RotaryView implements Sonar {
     private void drawArc(Canvas canvas, float centerX, float centerY, float radius) {
         if (!hasSensors()) return;
 
-        PointF arcPoint = SonarUtils.getPointOnCircle(centerX, centerY,
+        int paddingLeft = getPaddingLeft();
+        int paddingTop = getPaddingTop();
+
+        PointF arcPoint = SonarUtils.getPointOnCircle(paddingLeft + centerX, paddingTop + centerY,
                 (radius * 0.8f), mScannerAngle);
 
-        canvas.drawLine(centerX, centerY, arcPoint.x, arcPoint.y, mArcPaint);
+        canvas.drawLine(paddingLeft + centerX, paddingTop + centerY,
+                arcPoint.x, arcPoint.y, mArcPaint);
     }
 
     private Bitmap getSonarBitmap(int width, int height) {

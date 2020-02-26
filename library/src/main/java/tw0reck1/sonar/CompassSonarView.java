@@ -250,12 +250,15 @@ public class CompassSonarView extends RotaryView implements Sonar {
     }
 
     private void drawDirections(Canvas canvas, float centerX, float centerY, float radius) {
+        int paddingLeft = getPaddingLeft();
+        int paddingTop = getPaddingTop();
+
         int screenRotation = getScreenRotation();
         Paint usedPaint;
         for (int i = 0; i < DIRECTIONS.length; i++) {
             usedPaint = (i % 2 == 0) ? mFontPaint : mSmallFontPaint;
-            PointF start = SonarUtils.getPointOnCircle(centerX, centerY, (i % 2 == 0) ?
-                            radius * 0.89f : radius * 0.875f,
+            PointF start = SonarUtils.getPointOnCircle(paddingLeft + centerX,
+                    paddingTop + centerY, (i % 2 == 0) ? radius * 0.89f : radius * 0.875f,
                     mCurrentAngle - screenRotation + i * DIRECTION_ANGLE);
 
             canvas.drawText(DIRECTIONS[i], start.x, start.y
