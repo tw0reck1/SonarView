@@ -316,12 +316,12 @@ public class StrokeCompassSonarView extends RotaryView implements Sonar {
         Paint strokePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         strokePaint.setColor(mColor);
         strokePaint.setStyle(Paint.Style.STROKE);
-        strokePaint.setStrokeWidth(radius / 75);
+        strokePaint.setStrokeWidth(Math.max(2.5f, radius / 75f));
 
         Paint thinStrokePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         thinStrokePaint.setColor(mColor);
         thinStrokePaint.setStyle(Paint.Style.STROKE);
-        thinStrokePaint.setStrokeWidth(radius / 200);
+        thinStrokePaint.setStrokeWidth(Math.max(1f, radius / 200f));
 
         circleCanvas.drawCircle(center, center, radius * 0.75f, thinStrokePaint);
         circleCanvas.drawCircle(center, center, radius * 0.5f, thinStrokePaint);
