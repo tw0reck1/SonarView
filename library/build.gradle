@@ -1,11 +1,12 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 28
+    namespace 'tw0reck1.sonar'
 
     defaultConfig {
         minSdkVersion 14
-        targetSdkVersion 28
+        targetSdkVersion 33
+        compileSdk 33
         versionCode 1
         versionName "1.0"
     }
