@@ -45,6 +45,10 @@ public class StrokeSonarView extends RotaryView implements Sonar {
             INNER_CIRCLE_MASK = 0x3fffffff,
             ARC_MASK = 0xffffffff;
 
+    private static final float DEFAULT_STROKE_WIDTH = 2.5f,
+            DEFAULT_THIN_STROKE_WIDTH = 1.25f,
+            DEFAULT_POINT_SIZE = 8f;
+
     private static final boolean DEFAULT_OUTER_BORDER = true;
 
     private static final int
@@ -65,6 +69,10 @@ public class StrokeSonarView extends RotaryView implements Sonar {
     private List<SonarPoint> mPointsList = new LinkedList<>();
 
     protected int mScannerAngle;
+
+    protected float mStrokeWidth = DEFAULT_STROKE_WIDTH;
+    protected float mThinStrokeWidth = DEFAULT_THIN_STROKE_WIDTH;
+    protected float mPointSize = DEFAULT_POINT_SIZE;
 
     protected int mColor = DEFAULT_COLOR;
     protected int mArcColor = DEFAULT_COLOR & ARC_MASK;
@@ -96,6 +104,12 @@ public class StrokeSonarView extends RotaryView implements Sonar {
         TypedArray array = context.getTheme().obtainStyledAttributes(attrs,
                 R.styleable.SonarView, defStyleAttr, 0);
 
+        mStrokeWidth = array.getDimension(R.styleable.SonarView_sv_strokeWidth,
+                SonarUtils.dpToPx(getResources(), DEFAULT_STROKE_WIDTH));
+        mThinStrokeWidth = array.getDimension(R.styleable.SonarView_sv_thinStrokeWidth,
+                SonarUtils.dpToPx(getResources(), DEFAULT_THIN_STROKE_WIDTH));
+        mPointSize = array.getDimension(R.styleable.SonarView_sv_pointSize,
+                SonarUtils.dpToPx(getResources(), DEFAULT_POINT_SIZE));
         mColor = array.getColor(R.styleable.SonarView_sv_color, DEFAULT_COLOR);
         mOuterBorder = array.getBoolean(R.styleable.SonarView_sv_outerBorder, DEFAULT_OUTER_BORDER);
         mLoopDuration = SonarUtils.clamp(array.getInt(R.styleable.SonarView_sv_loopDuration,
@@ -142,6 +156,36 @@ public class StrokeSonarView extends RotaryView implements Sonar {
     }
 
     @Override
+    public void setStrokeWidth(float strokeWidth) {
+        mStrokeWidth = strokeWidth;
+        if (mSonarBitmap != null) {
+            mSonarBitmap = getSonarBitmap(getWidth(), getHeight());
+        }
+    }
+
+    @Override
+    public void setThinStrokeWidth(float thinStrokeWidth) {
+        mThinStrokeWidth = thinStrokeWidth;
+        if (mSonarBitmap != null) {
+            mSonarBitmap = getSonarBitmap(getWidth(), getHeight());
+        }
+    }
+
+    @Override
+    public void setStrokeWidths(float strokeWidth, float thinStrokeWidth) {
+        mStrokeWidth = strokeWidth;
+        mThinStrokeWidth = thinStrokeWidth;
+        if (mSonarBitmap != null) {
+            mSonarBitmap = getSonarBitmap(getWidth(), getHeight());
+        }
+    }
+
+    @Override
+    public void setPointSize(float pointSize) {
+        mPointSize = pointSize;
+    }
+
+    @Override
     protected void onSizeChanged(int width, int height, int oldwidth, int oldheight) {
         mSonarBitmap = getSonarBitmap(width, height);
 
@@ -170,16 +214,13 @@ public class StrokeSonarView extends RotaryView implements Sonar {
         mAnimator.setRepeatMode(ValueAnimator.RESTART);
         mAnimator.setRepeatCount(ValueAnimator.INFINITE);
         mAnimator.setInterpolator(new LinearInterpolator());
-        mAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator anim) {
-                mScannerAngle = (int) anim.getAnimatedValue();
+        mAnimator.addUpdateListener(anim -> {
+            mScannerAngle = (int) anim.getAnimatedValue();
 
-                updateAngle();
-                detectPoints();
+            updateAngle();
+            detectPoints();
 
-                invalidate();
-            }
+            invalidate();
         });
         mAnimator.start();
     }
@@ -227,7 +268,7 @@ public class StrokeSonarView extends RotaryView implements Sonar {
     private void drawPoints(Canvas canvas, float centerX, float centerY, float radius) {
         if (!hasSensors()) return;
 
-        float circleBaseRadius = Math.max(1, radius / 50);
+        float circleBaseRadius = mPointSize / 2f;
 
         int paddingLeft = getPaddingLeft();
         int paddingTop = getPaddingTop();
@@ -239,7 +280,7 @@ public class StrokeSonarView extends RotaryView implements Sonar {
             float circleRadius = circleBaseRadius * sizeRatio;
 
             PointF circleCenter = SonarUtils.getPointOnCircle(centerX, centerY,
-                    (radius * 0.8f - circleBaseRadius) * point.getDetectedDist(),
+                    (radius * 0.75f - circleBaseRadius) * point.getDetectedDist(),
                     point.getDetectedAngle());
 
             mPointPaint.setAlpha((int) (point.getVisibility() * 255));
@@ -256,7 +297,7 @@ public class StrokeSonarView extends RotaryView implements Sonar {
         int paddingTop = getPaddingTop();
 
         PointF arcPoint = SonarUtils.getPointOnCircle(paddingLeft + centerX, paddingTop + centerY,
-                (radius * 0.8f), mScannerAngle);
+                (radius * 0.75f), mScannerAngle);
 
         canvas.drawLine(paddingLeft + centerX, paddingTop + centerY,
                 arcPoint.x, arcPoint.y, mArcPaint);
@@ -286,43 +327,41 @@ public class StrokeSonarView extends RotaryView implements Sonar {
         innerBackgroundPaint.setColor(Color.BLACK);
         innerBackgroundPaint.setStyle(Paint.Style.FILL);
 
-        circleCanvas.drawCircle(center, center, radius * 0.8f, innerBackgroundPaint);
+        circleCanvas.drawCircle(center, center, radius * 0.75f, innerBackgroundPaint);
 
         Paint strokePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         strokePaint.setColor(mColor);
         strokePaint.setStyle(Paint.Style.STROKE);
-        strokePaint.setStrokeWidth(Math.max(2f, radius / 100f));
+        strokePaint.setStrokeWidth(mStrokeWidth);
 
         Paint thinStrokePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         thinStrokePaint.setColor(mColor);
         thinStrokePaint.setStyle(Paint.Style.STROKE);
-        thinStrokePaint.setStrokeWidth(Math.max(1f, radius / 200f));
+        thinStrokePaint.setStrokeWidth(mThinStrokeWidth);
 
         if (mOuterBorder) {
             circleCanvas.drawCircle(center, center, radius - strokePaint.getStrokeWidth() / 2f, strokePaint);
         }
-        circleCanvas.drawCircle(center, center, radius * 0.8f, thinStrokePaint);
-        circleCanvas.drawCircle(center, center, radius * 0.64f, thinStrokePaint);
-        circleCanvas.drawCircle(center, center, radius * 0.48f, thinStrokePaint);
-        circleCanvas.drawCircle(center, center, radius * 0.32f, thinStrokePaint);
-        circleCanvas.drawCircle(center, center, radius * 0.16f, thinStrokePaint);
+        circleCanvas.drawCircle(center, center, radius * 0.75f, thinStrokePaint);
+        circleCanvas.drawCircle(center, center, radius * 0.6f, thinStrokePaint);
+        circleCanvas.drawCircle(center, center, radius * 0.45f, thinStrokePaint);
+        circleCanvas.drawCircle(center, center, radius * 0.3f, thinStrokePaint);
+        circleCanvas.drawCircle(center, center, radius * 0.15f, thinStrokePaint);
 
         for (int i = 0; i < LINE_COUNT; i++) {
             int angle = i * LINE_ANGLE;
-            PointF start = SonarUtils.getPointOnCircle(center, center, radius * 0.8f, angle),
+            PointF start = SonarUtils.getPointOnCircle(center, center, radius * 0.75f, angle),
                     end = SonarUtils.getPointOnCircle(center, center, 0f, angle);
 
-            circleCanvas.drawLine(start.x, start.y, end.x, end.y,
-                    (i % (LINE_COUNT / 4) == 0) ? strokePaint : thinStrokePaint);
+            circleCanvas.drawLine(start.x, start.y, end.x, end.y, thinStrokePaint);
         }
 
         for (int i = 0; i < SHORT_LINE_COUNT; i++) {
             int angle = i * SHORT_LINE_ANGLE;
             boolean longerLine = (i % 3 == 0);
             PointF start = SonarUtils.getPointOnCircle(center, center,
-                    radius * (longerLine ? 0.83f : 0.81f), angle),
-                    end = SonarUtils.getPointOnCircle(center, center,
-                            radius * (longerLine ? 0.75f : 0.78f), angle);
+                    radius * (longerLine ? 0.80f : 0.78f), angle),
+                    end = SonarUtils.getPointOnCircle(center, center, radius * 0.75f, angle);
 
             circleCanvas.drawLine(start.x, start.y, end.x, end.y,
                     (i % (SHORT_LINE_COUNT / 4) == 0) ? strokePaint : thinStrokePaint);
@@ -332,12 +371,12 @@ public class StrokeSonarView extends RotaryView implements Sonar {
         fontPaint.setColor(mColor);
         fontPaint.setTextAlign(Paint.Align.CENTER);
         fontPaint.setFakeBoldText(true);
-        fontPaint.setTextSize(radius / 12);
+        fontPaint.setTextSize(radius / 10);
 
         Paint smallFontPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         smallFontPaint.setColor(mColor);
         smallFontPaint.setTextAlign(Paint.Align.CENTER);
-        smallFontPaint.setTextSize(radius / 16);
+        smallFontPaint.setTextSize(radius / 14);
 
         int count = (smallFontPaint.getTextSize() > 24f)
                 ? 15 : ((smallFontPaint.getTextSize() > 12f) ? 30 : 45);
@@ -347,7 +386,7 @@ public class StrokeSonarView extends RotaryView implements Sonar {
         for (int i = 0; i < 360 / count; i++) {
             int degree = i * count;
             usedPaint = (degree % 90 == 0) ? fontPaint : smallFontPaint;
-            PointF start = SonarUtils.getPointOnCircle(center, center, radius * 0.9f, degree);
+            PointF start = SonarUtils.getPointOnCircle(center, center, radius * 0.885f, degree);
 
             circleCanvas.drawText(Integer.toString(degree), start.x, start.y
                     - ((usedPaint.descent() + usedPaint.ascent()) / 2), usedPaint);
@@ -392,7 +431,7 @@ public class StrokeSonarView extends RotaryView implements Sonar {
             float diameter = Math.min(bounds.width(), bounds.height());
             float radius = diameter / 2f;
 
-            int inset = Math.round(0.2f * radius);
+            int inset = Math.round(0.25f * radius);
             bounds.inset(inset, inset);
 
             outline.setOval(bounds);

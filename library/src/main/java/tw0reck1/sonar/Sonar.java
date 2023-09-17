@@ -10,4 +10,12 @@ public interface Sonar {
 
     void setColor(int color);
 
+    void setStrokeWidth(float strokeWidth);
+
+    void setThinStrokeWidth(float thinStrokeWidth);
+
+    void setStrokeWidths(float strokeWidth, float thinStrokeWidth);
+
+    void setPointSize(float pointSize);
+
 }

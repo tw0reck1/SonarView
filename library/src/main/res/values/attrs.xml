@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="SonarView">
+        <attr name="sv_strokeWidth" format="dimension"/>
+        <attr name="sv_thinStrokeWidth" format="dimension"/>
+        <attr name="sv_pointSize" format="dimension"/>
         <attr name="sv_color" format="color"/>
         <attr name="sv_outerBorder" format="boolean"/>
         <attr name="sv_loopDuration" format="integer"/>

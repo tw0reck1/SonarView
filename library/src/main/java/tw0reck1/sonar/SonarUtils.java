@@ -15,11 +15,18 @@
  */
 package tw0reck1.sonar;
 
+import android.content.res.Resources;
 import android.graphics.PointF;
+import android.util.TypedValue;
 
 class SonarUtils {
 
     private SonarUtils() {}
+
+    static float dpToPx(Resources resources, float dp) {
+        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp,
+                resources.getDisplayMetrics());
+    }
 
     static int getAngleFromRadian(float radian) {
         return (int) (-1f * Math.round(radian / Math.PI * 180f));
