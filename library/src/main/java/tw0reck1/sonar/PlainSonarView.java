@@ -49,7 +49,7 @@ public class PlainSonarView extends RotaryView implements Sonar {
             ARC_MASK = 0xbfffffff,
             POINT_MASK = 0xffffffff;
 
-    private static final float DEFAULT_STROKE_WIDTH = 3.75f,
+    public static final float DEFAULT_STROKE_WIDTH = 3.75f,
             DEFAULT_THIN_STROKE_WIDTH = 2f,
             DEFAULT_POINT_SIZE = 20f;
 

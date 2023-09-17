@@ -54,7 +54,7 @@ public class CompassSonarView extends RotaryView implements Sonar {
             POINT_GRADIENT_START_MASK = 0xffffffff,
             POINT_GRADIENT_END_MASK = 0x7fffffff;
 
-    private static final float DEFAULT_STROKE_WIDTH = 2.5f,
+    public static final float DEFAULT_STROKE_WIDTH = 2.5f,
             DEFAULT_THIN_STROKE_WIDTH = 1.25f,
             DEFAULT_POINT_SIZE = 8f;
 

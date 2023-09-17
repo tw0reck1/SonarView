@@ -46,7 +46,7 @@ public class StrokeCompassSonarView extends RotaryView implements Sonar {
     private static final int DEFAULT_COLOR = 0xff03CC02,
             ARC_MASK = 0xffffffff;
 
-    private static final float DEFAULT_STROKE_WIDTH = 2.5f,
+    public static final float DEFAULT_STROKE_WIDTH = 2.5f,
             DEFAULT_THIN_STROKE_WIDTH = 1.25f,
             DEFAULT_POINT_SIZE = 8f;
 
