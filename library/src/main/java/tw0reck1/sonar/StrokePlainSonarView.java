@@ -269,6 +269,7 @@ public class StrokePlainSonarView extends RotaryView implements Sonar {
         if (!hasSensors()) return;
 
         float circleRadius = mPointSize / 2f;
+        float maxRadius = radius - circleRadius - mStrokeWidth;
 
         int paddingLeft = getPaddingLeft();
         int paddingTop = getPaddingTop();
@@ -277,7 +278,7 @@ public class StrokePlainSonarView extends RotaryView implements Sonar {
             if (!point.isVisible()) continue;
 
             PointF circleCenter = SonarUtils.getPointOnCircle(centerX, centerY,
-                    (radius - circleRadius) * point.getDetectedDist(),
+                    maxRadius * point.getDetectedDist(),
                     point.getDetectedAngle());
 
             mPointPaint.setAlpha((int) (point.getVisibility() * 255));
@@ -330,12 +331,13 @@ public class StrokePlainSonarView extends RotaryView implements Sonar {
         thinStrokePaint.setStyle(Paint.Style.STROKE);
         thinStrokePaint.setStrokeWidth(mThinStrokeWidth);
 
+        float padding = mOuterBorder ? strokePaint.getStrokeWidth() / 2f : 0f;
         if (mOuterBorder) {
-            circleCanvas.drawCircle(center, center, radius - strokePaint.getStrokeWidth() / 2f, strokePaint);
+            circleCanvas.drawCircle(center, center, radius - padding, strokePaint);
         }
-        circleCanvas.drawCircle(center, center, radius * 0.75f, thinStrokePaint);
-        circleCanvas.drawCircle(center, center, radius * 0.5f, thinStrokePaint);
-        circleCanvas.drawCircle(center, center, radius * 0.25f, thinStrokePaint);
+        circleCanvas.drawCircle(center, center, (radius - padding) * 0.75f, thinStrokePaint);
+        circleCanvas.drawCircle(center, center, (radius - padding) * 0.5f, thinStrokePaint);
+        circleCanvas.drawCircle(center, center, (radius - padding) * 0.25f, thinStrokePaint);
 
         for (int i = 0; i < LINE_COUNT; i++) {
             int angle = i * LINE_ANGLE;
