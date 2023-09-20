@@ -136,6 +136,20 @@ public class StrokeCompassSonarView extends RotaryView implements Sonar {
         mSmallFontPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mSmallFontPaint.setColor(mColor);
         mSmallFontPaint.setTextAlign(Paint.Align.CENTER);
+
+        mAnimator = ValueAnimator.ofInt(0, 360);
+        mAnimator.setDuration(mLoopDuration);
+        mAnimator.setRepeatMode(ValueAnimator.RESTART);
+        mAnimator.setRepeatCount(ValueAnimator.INFINITE);
+        mAnimator.setInterpolator(new LinearInterpolator());
+        mAnimator.addUpdateListener(anim -> {
+            mScannerAngle = (int) anim.getAnimatedValue();
+
+            updateAngle();
+            detectPoints();
+
+            invalidate();
+        });
     }
 
     @Override
@@ -163,6 +177,7 @@ public class StrokeCompassSonarView extends RotaryView implements Sonar {
         if (mSonarBitmap != null) {
             mSonarBitmap = getSonarBitmap(getWidth(), getHeight());
         }
+        invalidate();
     }
 
     @Override
@@ -171,6 +186,7 @@ public class StrokeCompassSonarView extends RotaryView implements Sonar {
         if (mSonarBitmap != null) {
             mSonarBitmap = getSonarBitmap(getWidth(), getHeight());
         }
+        invalidate();
     }
 
     @Override
@@ -179,20 +195,33 @@ public class StrokeCompassSonarView extends RotaryView implements Sonar {
         if (mSonarBitmap != null) {
             mSonarBitmap = getSonarBitmap(getWidth(), getHeight());
         }
-    }
-
-    @Override
-    public void setStrokeWidths(float strokeWidth, float thinStrokeWidth) {
-        mStrokeWidth = strokeWidth;
-        mThinStrokeWidth = thinStrokeWidth;
-        if (mSonarBitmap != null) {
-            mSonarBitmap = getSonarBitmap(getWidth(), getHeight());
-        }
+        invalidate();
     }
 
     @Override
     public void setPointSize(float pointSize) {
         mPointSize = pointSize;
+    }
+
+    @Override
+    public void setSizes(float strokeWidth, float thinStrokeWidth, float pointSize) {
+        mStrokeWidth = strokeWidth;
+        mThinStrokeWidth = thinStrokeWidth;
+        mPointSize = pointSize;
+        if (mSonarBitmap != null) {
+            mSonarBitmap = getSonarBitmap(getWidth(), getHeight());
+        }
+        invalidate();
+    }
+
+    @Override
+    public void startAnimation() {
+        mAnimator.start();
+    }
+
+    @Override
+    public void stopAnimation() {
+        mAnimator.cancel();
     }
 
     @Override
@@ -210,41 +239,6 @@ public class StrokeCompassSonarView extends RotaryView implements Sonar {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             setOutlineProvider(new CompassOutline(width, height));
-        }
-    }
-
-    @Override
-    protected void onFinishInflate() {
-        super.onFinishInflate();
-
-        startAnimation();
-    }
-
-    private void startAnimation() {
-        mAnimator = ValueAnimator.ofInt(0, 360);
-        mAnimator.setDuration(mLoopDuration);
-        mAnimator.setRepeatMode(ValueAnimator.RESTART);
-        mAnimator.setRepeatCount(ValueAnimator.INFINITE);
-        mAnimator.setInterpolator(new LinearInterpolator());
-        mAnimator.addUpdateListener(anim -> {
-            mScannerAngle = (int) anim.getAnimatedValue();
-
-            updateAngle();
-            detectPoints();
-
-            invalidate();
-        });
-        mAnimator.start();
-    }
-
-    @Override
-    protected void onVisibilityChanged(View changedView, int visibility) {
-        if (mAnimator == null) return;
-
-        if (getVisibility() == VISIBLE) {
-            mAnimator.start();
-        } else {
-            mAnimator.cancel();
         }
     }
 
@@ -273,8 +267,10 @@ public class StrokeCompassSonarView extends RotaryView implements Sonar {
 
         canvas.drawBitmap(mSonarBitmap, getPaddingLeft(), getPaddingTop(), null);
 
-        drawPoints(canvas, radius, radius, radius);
-        drawArc(canvas, radius, radius, radius);
+        if (mAnimator.isRunning()) {
+            drawPoints(canvas, radius, radius, radius);
+            drawArc(canvas, radius, radius, radius);
+        }
 
         canvas.restore();
     }

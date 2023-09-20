@@ -14,8 +14,12 @@ public interface Sonar {
 
     void setThinStrokeWidth(float thinStrokeWidth);
 
-    void setStrokeWidths(float strokeWidth, float thinStrokeWidth);
-
     void setPointSize(float pointSize);
+
+    void setSizes(float strokeWidth, float thinStrokeWidth, float pointSize);
+
+    void startAnimation();
+
+    void stopAnimation();
 
 }

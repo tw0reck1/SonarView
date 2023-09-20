@@ -138,6 +138,20 @@ public class SonarView extends RotaryView implements Sonar {
 
         mPointPaint.setColor(mColor);
         mPointPaint.setStyle(Paint.Style.FILL);
+
+        mAnimator = ValueAnimator.ofInt(0, 360);
+        mAnimator.setDuration(mLoopDuration);
+        mAnimator.setRepeatMode(ValueAnimator.RESTART);
+        mAnimator.setRepeatCount(ValueAnimator.INFINITE);
+        mAnimator.setInterpolator(new LinearInterpolator());
+        mAnimator.addUpdateListener(anim -> {
+            mScannerAngle = (int) anim.getAnimatedValue();
+
+            updateAngle();
+            detectPoints();
+
+            invalidate();
+        });
     }
 
     @Override
@@ -164,6 +178,7 @@ public class SonarView extends RotaryView implements Sonar {
         if (mSonarBitmap != null) {
             mSonarBitmap = getSonarBitmap(getWidth(), getHeight());
         }
+        invalidate();
     }
 
     @Override
@@ -172,6 +187,7 @@ public class SonarView extends RotaryView implements Sonar {
         if (mSonarBitmap != null) {
             mSonarBitmap = getSonarBitmap(getWidth(), getHeight());
         }
+        invalidate();
     }
 
     @Override
@@ -180,15 +196,7 @@ public class SonarView extends RotaryView implements Sonar {
         if (mSonarBitmap != null) {
             mSonarBitmap = getSonarBitmap(getWidth(), getHeight());
         }
-    }
-
-    @Override
-    public void setStrokeWidths(float strokeWidth, float thinStrokeWidth) {
-        mStrokeWidth = strokeWidth;
-        mThinStrokeWidth = thinStrokeWidth;
-        if (mSonarBitmap != null) {
-            mSonarBitmap = getSonarBitmap(getWidth(), getHeight());
-        }
+        invalidate();
     }
 
     @Override
@@ -197,46 +205,32 @@ public class SonarView extends RotaryView implements Sonar {
     }
 
     @Override
+    public void setSizes(float strokeWidth, float thinStrokeWidth, float pointSize) {
+        mStrokeWidth = strokeWidth;
+        mThinStrokeWidth = thinStrokeWidth;
+        mPointSize = pointSize;
+        if (mSonarBitmap != null) {
+            mSonarBitmap = getSonarBitmap(getWidth(), getHeight());
+        }
+        invalidate();
+    }
+
+    @Override
+    public void startAnimation() {
+        mAnimator.start();
+    }
+
+    @Override
+    public void stopAnimation() {
+        mAnimator.cancel();
+    }
+
+    @Override
     protected void onSizeChanged(int width, int height, int oldwidth, int oldheight) {
         mSonarBitmap = getSonarBitmap(width, height);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             setOutlineProvider(new SonarOutline(width, height));
-        }
-    }
-
-    @Override
-    protected void onFinishInflate() {
-        super.onFinishInflate();
-
-        startAnimation();
-    }
-
-    private void startAnimation() {
-        mAnimator = ValueAnimator.ofInt(0, 360);
-        mAnimator.setDuration(mLoopDuration);
-        mAnimator.setRepeatMode(ValueAnimator.RESTART);
-        mAnimator.setRepeatCount(ValueAnimator.INFINITE);
-        mAnimator.setInterpolator(new LinearInterpolator());
-        mAnimator.addUpdateListener(anim -> {
-            mScannerAngle = (int) anim.getAnimatedValue();
-
-            updateAngle();
-            detectPoints();
-
-            invalidate();
-        });
-        mAnimator.start();
-    }
-
-    @Override
-    protected void onVisibilityChanged(View changedView, int visibility) {
-        if (mAnimator == null) return;
-
-        if (getVisibility() == VISIBLE) {
-            mAnimator.start();
-        } else {
-            mAnimator.cancel();
         }
     }
 
@@ -256,9 +250,11 @@ public class SonarView extends RotaryView implements Sonar {
     protected void drawSonar(Canvas canvas) {
         if (mSonarBitmap == null) return;
 
-        float radius = mSonarBitmap.getWidth() / 2f;
-
         canvas.drawBitmap(mSonarBitmap, getPaddingLeft(), getPaddingTop(), null);
+
+        if (!mAnimator.isRunning()) return;
+
+        float radius = mSonarBitmap.getWidth() / 2f;
 
         canvas.save();
         canvas.rotate(-getScreenRotation(), getPaddingLeft() + radius, getPaddingTop() + radius);
