@@ -356,11 +356,13 @@ public class SonarView extends RotaryView implements Sonar {
         strokePaint.setColor(mColor);
         strokePaint.setStyle(Paint.Style.STROKE);
         strokePaint.setStrokeWidth(mStrokeWidth);
+        strokePaint.setStrokeCap(Paint.Cap.ROUND);
 
         Paint thinStrokePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         thinStrokePaint.setColor(mColor);
         thinStrokePaint.setStyle(Paint.Style.STROKE);
         thinStrokePaint.setStrokeWidth(mThinStrokeWidth);
+        thinStrokePaint.setStrokeCap(Paint.Cap.ROUND);
 
         if (mOuterBorder) {
             circleCanvas.drawCircle(center, center, radius - strokePaint.getStrokeWidth() / 2f, strokePaint);
@@ -381,9 +383,7 @@ public class SonarView extends RotaryView implements Sonar {
 
         for (int i = 0; i < SHORT_LINE_COUNT; i++) {
             int angle = i * SHORT_LINE_ANGLE;
-            boolean longerLine = (i % 3 == 0);
-            PointF start = SonarUtils.getPointOnCircle(center, center,
-                    radius * (longerLine ? 0.80f : 0.78f), angle),
+            PointF start = SonarUtils.getPointOnCircle(center, center, radius * 0.78f, angle),
                     end = SonarUtils.getPointOnCircle(center, center, radius * 0.75f, angle);
 
             circleCanvas.drawLine(start.x, start.y, end.x, end.y,
@@ -394,7 +394,7 @@ public class SonarView extends RotaryView implements Sonar {
         fontPaint.setColor(mColor);
         fontPaint.setTextAlign(Paint.Align.CENTER);
         fontPaint.setFakeBoldText(true);
-        fontPaint.setTextSize(radius / 10);
+        fontPaint.setTextSize(radius / 12);
 
         Paint smallFontPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         smallFontPaint.setColor(mColor);
@@ -409,7 +409,7 @@ public class SonarView extends RotaryView implements Sonar {
         for (int i = 0; i < 360 / count; i++) {
             int degree = i * count;
             usedPaint = (degree % 90 == 0) ? fontPaint : smallFontPaint;
-            PointF start = SonarUtils.getPointOnCircle(center, center, radius * 0.885f, degree);
+            PointF start = SonarUtils.getPointOnCircle(center, center, radius * 0.88f, degree);
 
             circleCanvas.drawText(Integer.toString(degree), start.x, start.y
                     - ((usedPaint.descent() + usedPaint.ascent()) / 2), usedPaint);
