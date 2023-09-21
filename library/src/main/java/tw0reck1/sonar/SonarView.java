@@ -217,7 +217,9 @@ public class SonarView extends RotaryView implements Sonar {
 
     @Override
     public void startAnimation() {
-        mAnimator.start();
+        if (!mAnimator.isRunning()) {
+            mAnimator.start();
+        }
     }
 
     @Override
