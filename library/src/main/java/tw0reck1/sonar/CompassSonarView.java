@@ -235,6 +235,7 @@ public class CompassSonarView extends RotaryView implements Sonar {
     @Override
     public void stopAnimation() {
         mAnimator.cancel();
+        invalidate();
     }
 
     @Override
