@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <declare-styleable name="TextSonarView">
+        <attr name="sv_fontSize" format="dimension"/>
+        <attr name="sv_thinFontSize" format="dimension"/>
+    </declare-styleable>
     <declare-styleable name="SonarView">
         <attr name="sv_strokeWidth" format="dimension"/>
         <attr name="sv_thinStrokeWidth" format="dimension"/>

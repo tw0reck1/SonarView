@@ -193,12 +193,22 @@ public class PlainSonarView extends RotaryView implements Sonar {
     }
 
     @Override
+    public void setFontSize(float fontSize) {
+        // no-op
+    }
+
+    @Override
+    public void setThinFontSize(float thinFontSize) {
+        // no-op
+    }
+
+    @Override
     public void setPointSize(float pointSize) {
         mPointSize = pointSize;
     }
 
     @Override
-    public void setSizes(float strokeWidth, float thinStrokeWidth, float pointSize) {
+    public void setSizes(float strokeWidth, float thinStrokeWidth, float fontSize, float thinFontSize, float pointSize) {
         mStrokeWidth = strokeWidth;
         mThinStrokeWidth = thinStrokeWidth;
         mPointSize = pointSize;

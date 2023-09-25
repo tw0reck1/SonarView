@@ -28,6 +28,11 @@ class SonarUtils {
                 resources.getDisplayMetrics());
     }
 
+    static float spToPx(Resources resources, float dp) {
+        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, dp,
+                resources.getDisplayMetrics());
+    }
+
     static int getAngleFromRadian(float radian) {
         return (int) (-1f * Math.round(radian / Math.PI * 180f));
     }
