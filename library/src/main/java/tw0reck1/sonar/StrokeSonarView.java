@@ -44,7 +44,8 @@ public class StrokeSonarView extends RotaryView implements Sonar {
     private static final int DEFAULT_COLOR = 0xff03CC02,
             INNER_CIRCLE_MASK = 0x3fffffff,
             ARC_MASK = 0xffffffff,
-            TEXT_MASK = 0xbfffffff;
+            TEXT_MASK = 0xbfffffff,
+            STROKE_MASK = 0x9fffffff;
 
     public static final float
             DEFAULT_FONT_SIZE = 18f,
@@ -375,7 +376,7 @@ public class StrokeSonarView extends RotaryView implements Sonar {
         strokePaint.setStrokeCap(Paint.Cap.ROUND);
 
         Paint thinStrokePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        thinStrokePaint.setColor(mColor);
+        thinStrokePaint.setColor(mColor & STROKE_MASK);
         thinStrokePaint.setStyle(Paint.Style.STROKE);
         thinStrokePaint.setStrokeWidth(mThinStrokeWidth);
         thinStrokePaint.setStrokeCap(Paint.Cap.ROUND);
@@ -397,6 +398,7 @@ public class StrokeSonarView extends RotaryView implements Sonar {
             circleCanvas.drawLine(start.x, start.y, end.x, end.y, thinStrokePaint);
         }
 
+        thinStrokePaint.setColor(mColor);
         for (int i = 0; i < SHORT_LINE_COUNT; i++) {
             int angle = i * SHORT_LINE_ANGLE;
             PointF start = SonarUtils.getPointOnCircle(center, center, circleRadius * 1.05f, angle),

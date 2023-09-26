@@ -44,7 +44,9 @@ public class StrokeCompassSonarView extends RotaryView implements Sonar {
     private static final String[] DIRECTIONS = {"N", "NE", "E", "SE", "S", "SW", "W", "NW"};
 
     private static final int DEFAULT_COLOR = 0xff03CC02,
-            ARC_MASK = 0xffffffff;
+            ARC_MASK = 0xffffffff,
+            TEXT_MASK = 0xbfffffff,
+            STROKE_MASK = 0x9fffffff;
 
     public static final float
             DEFAULT_FONT_SIZE = 28f,
@@ -151,7 +153,7 @@ public class StrokeCompassSonarView extends RotaryView implements Sonar {
         mFontPaint.setTextSize(mFontSize);
 
         mSmallFontPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        mSmallFontPaint.setColor(mColor);
+        mSmallFontPaint.setColor(mColor & TEXT_MASK);
         mSmallFontPaint.setTextAlign(Paint.Align.CENTER);
         mSmallFontPaint.setTextSize(mThinFontSize);
 
@@ -190,7 +192,7 @@ public class StrokeCompassSonarView extends RotaryView implements Sonar {
 
         mPointPaint.setColor(mColor);
         mFontPaint.setColor(mColor);
-        mSmallFontPaint.setColor(mColor);
+        mSmallFontPaint.setColor(mColor & TEXT_MASK);
         mArcPaint.setColor(mArcColor);
         if (mSonarBitmap != null) {
             mSonarBitmap = getSonarBitmap(getWidth(), getHeight());
@@ -415,7 +417,7 @@ public class StrokeCompassSonarView extends RotaryView implements Sonar {
         strokePaint.setStrokeCap(Paint.Cap.ROUND);
 
         Paint thinStrokePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        thinStrokePaint.setColor(mColor);
+        thinStrokePaint.setColor(mColor & STROKE_MASK);
         thinStrokePaint.setStyle(Paint.Style.STROKE);
         thinStrokePaint.setStrokeWidth(mThinStrokeWidth);
         thinStrokePaint.setStrokeCap(Paint.Cap.ROUND);
@@ -435,6 +437,7 @@ public class StrokeCompassSonarView extends RotaryView implements Sonar {
                     directionalLine ? strokePaint : thinStrokePaint);
         }
 
+        thinStrokePaint.setColor(mColor);
         float maxLineRadius = radius - mStrokeWidth / 4f;
         for (int i = 0; i < SHORT_LINE_COUNT; i++) {
             int angle = i * SHORT_LINE_ANGLE;
