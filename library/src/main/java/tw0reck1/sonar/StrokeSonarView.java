@@ -43,9 +43,13 @@ public class StrokeSonarView extends RotaryView implements Sonar {
 
     private static final int DEFAULT_COLOR = 0xff03CC02,
             INNER_CIRCLE_MASK = 0x3fffffff,
-            ARC_MASK = 0xffffffff;
+            ARC_MASK = 0xffffffff,
+            TEXT_MASK = 0xbfffffff;
 
-    public static final float DEFAULT_STROKE_WIDTH = 2.5f,
+    public static final float
+            DEFAULT_FONT_SIZE = 18f,
+            DEFAULT_THIN_FONT_SIZE = 10f,
+            DEFAULT_STROKE_WIDTH = 2.5f,
             DEFAULT_THIN_STROKE_WIDTH = 1.25f,
             DEFAULT_POINT_SIZE = 8f;
 
@@ -70,6 +74,8 @@ public class StrokeSonarView extends RotaryView implements Sonar {
 
     protected int mScannerAngle;
 
+    protected float mFontSize = DEFAULT_FONT_SIZE;
+    protected float mThinFontSize = DEFAULT_THIN_FONT_SIZE;
     protected float mStrokeWidth = DEFAULT_STROKE_WIDTH;
     protected float mThinStrokeWidth = DEFAULT_THIN_STROKE_WIDTH;
     protected float mPointSize = DEFAULT_POINT_SIZE;
@@ -102,6 +108,15 @@ public class StrokeSonarView extends RotaryView implements Sonar {
 
     private void initAttributes(Context context, AttributeSet attrs, int defStyleAttr) {
         TypedArray array = context.getTheme().obtainStyledAttributes(attrs,
+                R.styleable.TextSonarView, defStyleAttr, 0);
+
+        mFontSize = array.getDimension(R.styleable.TextSonarView_sv_fontSize,
+                SonarUtils.spToPx(getResources(), DEFAULT_FONT_SIZE));
+        mThinFontSize = array.getDimension(R.styleable.TextSonarView_sv_thinFontSize,
+                SonarUtils.spToPx(getResources(), DEFAULT_THIN_FONT_SIZE));
+
+        array.recycle();
+        array = context.getTheme().obtainStyledAttributes(attrs,
                 R.styleable.SonarView, defStyleAttr, 0);
 
         mStrokeWidth = array.getDimension(R.styleable.SonarView_sv_strokeWidth,
@@ -125,6 +140,8 @@ public class StrokeSonarView extends RotaryView implements Sonar {
         mArcColor = mColor & ARC_MASK;
         mArcPaint.setColor(mArcColor);
         mArcPaint.setStyle(Paint.Style.STROKE);
+        mArcPaint.setStrokeWidth(mStrokeWidth);
+        mArcPaint.setStrokeCap(Paint.Cap.ROUND);
 
         mPointPaint.setColor(mColor);
         mPointPaint.setStyle(Paint.Style.FILL);
@@ -173,6 +190,7 @@ public class StrokeSonarView extends RotaryView implements Sonar {
     @Override
     public void setStrokeWidth(float strokeWidth) {
         mStrokeWidth = strokeWidth;
+        mArcPaint.setStrokeWidth(strokeWidth);
         if (mSonarBitmap != null) {
             mSonarBitmap = getSonarBitmap(getWidth(), getHeight());
         }
@@ -190,12 +208,20 @@ public class StrokeSonarView extends RotaryView implements Sonar {
 
     @Override
     public void setFontSize(float fontSize) {
-        // no-op
+        mFontSize = fontSize;
+        if (mSonarBitmap != null) {
+            mSonarBitmap = getSonarBitmap(getWidth(), getHeight());
+        }
+        invalidate();
     }
 
     @Override
     public void setThinFontSize(float thinFontSize) {
-        // no-op
+        mThinFontSize = thinFontSize;
+        if (mSonarBitmap != null) {
+            mSonarBitmap = getSonarBitmap(getWidth(), getHeight());
+        }
+        invalidate();
     }
 
     @Override
@@ -206,7 +232,10 @@ public class StrokeSonarView extends RotaryView implements Sonar {
     @Override
     public void setSizes(float strokeWidth, float thinStrokeWidth, float fontSize, float thinFontSize, float pointSize) {
         mStrokeWidth = strokeWidth;
+        mArcPaint.setStrokeWidth(strokeWidth);
         mThinStrokeWidth = thinStrokeWidth;
+        mFontSize = fontSize;
+        mThinFontSize = thinFontSize;
         mPointSize = pointSize;
         if (mSonarBitmap != null) {
             mSonarBitmap = getSonarBitmap(getWidth(), getHeight());
@@ -228,15 +257,8 @@ public class StrokeSonarView extends RotaryView implements Sonar {
     }
 
     @Override
-    protected void onSizeChanged(int width, int height, int oldwidth, int oldheight) {
+    protected void onSizeChanged(int width, int height, int oldWidth, int oldHeight) {
         mSonarBitmap = getSonarBitmap(width, height);
-
-        if (mSonarBitmap != null) {
-            float radius = mSonarBitmap.getWidth() / 2f;
-
-            mArcPaint.setStrokeWidth(radius / 40);
-            mPointPaint.setStrokeWidth(radius / 60);
-        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             setOutlineProvider(new SonarOutline(width, height));
@@ -282,6 +304,9 @@ public class StrokeSonarView extends RotaryView implements Sonar {
         int paddingLeft = getPaddingLeft();
         int paddingTop = getPaddingTop();
 
+        float textSize = Math.max(mFontSize, mThinFontSize);
+        float maxRadius = radius - 2.25f * textSize - mStrokeWidth / 2f;
+
         for (SonarPoint point : mPointsList) {
             if (!point.isVisible()) continue;
 
@@ -289,7 +314,7 @@ public class StrokeSonarView extends RotaryView implements Sonar {
             float circleRadius = circleBaseRadius * sizeRatio;
 
             PointF circleCenter = SonarUtils.getPointOnCircle(centerX, centerY,
-                    (radius * 0.75f - circleBaseRadius) * point.getDetectedDist(),
+                    (maxRadius - circleBaseRadius) * point.getDetectedDist(),
                     point.getDetectedAngle());
 
             mPointPaint.setAlpha((int) (point.getVisibility() * 255));
@@ -305,8 +330,11 @@ public class StrokeSonarView extends RotaryView implements Sonar {
         int paddingLeft = getPaddingLeft();
         int paddingTop = getPaddingTop();
 
+        float textSize = Math.max(mFontSize, mThinFontSize);
+        float maxRadius = radius - 2.25f * textSize - mStrokeWidth / 2f;
+
         PointF arcPoint = SonarUtils.getPointOnCircle(paddingLeft + centerX, paddingTop + centerY,
-                (radius * 0.75f), mScannerAngle);
+                maxRadius, mScannerAngle);
 
         canvas.drawLine(paddingLeft + centerX, paddingTop + centerY,
                 arcPoint.x, arcPoint.y, mArcPaint);
@@ -315,6 +343,7 @@ public class StrokeSonarView extends RotaryView implements Sonar {
     private Bitmap getSonarBitmap(int width, int height) {
         float drawWidth = width - getPaddingLeft() - getPaddingRight(),
                 drawHeight = height - getPaddingTop() - getPaddingBottom(),
+                textSize = Math.max(mFontSize, mThinFontSize),
                 diameter = Math.min(drawWidth, drawHeight),
                 radius = diameter / 2f,
                 center = radius;
@@ -336,7 +365,8 @@ public class StrokeSonarView extends RotaryView implements Sonar {
         innerBackgroundPaint.setColor(Color.BLACK);
         innerBackgroundPaint.setStyle(Paint.Style.FILL);
 
-        circleCanvas.drawCircle(center, center, radius * 0.75f, innerBackgroundPaint);
+        float circleRadius = radius - 2.25f * textSize - mStrokeWidth / 2f;
+        circleCanvas.drawCircle(center, center, circleRadius, innerBackgroundPaint);
 
         Paint strokePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         strokePaint.setColor(mColor);
@@ -351,17 +381,17 @@ public class StrokeSonarView extends RotaryView implements Sonar {
         thinStrokePaint.setStrokeCap(Paint.Cap.ROUND);
 
         if (mOuterBorder) {
-            circleCanvas.drawCircle(center, center, radius - strokePaint.getStrokeWidth() / 2f, strokePaint);
+            circleCanvas.drawCircle(center, center, radius - mStrokeWidth / 2f, strokePaint);
         }
-        circleCanvas.drawCircle(center, center, radius * 0.75f, strokePaint);
-        circleCanvas.drawCircle(center, center, radius * 0.6f, thinStrokePaint);
-        circleCanvas.drawCircle(center, center, radius * 0.45f, thinStrokePaint);
-        circleCanvas.drawCircle(center, center, radius * 0.3f, thinStrokePaint);
-        circleCanvas.drawCircle(center, center, radius * 0.15f, thinStrokePaint);
+        circleCanvas.drawCircle(center, center, circleRadius, strokePaint);
+        circleCanvas.drawCircle(center, center, circleRadius * 0.8f, thinStrokePaint);
+        circleCanvas.drawCircle(center, center, circleRadius * 0.6f, thinStrokePaint);
+        circleCanvas.drawCircle(center, center, circleRadius * 0.4f, thinStrokePaint);
+        circleCanvas.drawCircle(center, center, circleRadius * 0.2f, thinStrokePaint);
 
         for (int i = 0; i < LINE_COUNT; i++) {
             int angle = i * LINE_ANGLE;
-            PointF start = SonarUtils.getPointOnCircle(center, center, radius * 0.75f, angle),
+            PointF start = SonarUtils.getPointOnCircle(center, center, circleRadius, angle),
                     end = SonarUtils.getPointOnCircle(center, center, 0f, angle);
 
             circleCanvas.drawLine(start.x, start.y, end.x, end.y, thinStrokePaint);
@@ -369,8 +399,8 @@ public class StrokeSonarView extends RotaryView implements Sonar {
 
         for (int i = 0; i < SHORT_LINE_COUNT; i++) {
             int angle = i * SHORT_LINE_ANGLE;
-            PointF start = SonarUtils.getPointOnCircle(center, center, radius * 0.78f, angle),
-                    end = SonarUtils.getPointOnCircle(center, center, radius * 0.75f, angle);
+            PointF start = SonarUtils.getPointOnCircle(center, center, circleRadius * 1.05f, angle),
+                    end = SonarUtils.getPointOnCircle(center, center, circleRadius, angle);
 
             circleCanvas.drawLine(start.x, start.y, end.x, end.y,
                     (i % (SHORT_LINE_COUNT / 4) == 0) ? strokePaint : thinStrokePaint);
@@ -380,22 +410,23 @@ public class StrokeSonarView extends RotaryView implements Sonar {
         fontPaint.setColor(mColor);
         fontPaint.setTextAlign(Paint.Align.CENTER);
         fontPaint.setFakeBoldText(true);
-        fontPaint.setTextSize(radius / 12);
+        fontPaint.setTextSize(mFontSize);
 
         Paint smallFontPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        smallFontPaint.setColor(mColor);
+        smallFontPaint.setColor(mColor & TEXT_MASK);
         smallFontPaint.setTextAlign(Paint.Align.CENTER);
-        smallFontPaint.setTextSize(radius / 14);
+        smallFontPaint.setTextSize(mThinFontSize);
 
         int count = (smallFontPaint.getTextSize() > 24f)
                 ? 15 : ((smallFontPaint.getTextSize() > 12f) ? 30 : 45);
 
         Paint usedPaint;
 
+        float textRadius = radius - 1.125f * textSize - mStrokeWidth / 2f;
         for (int i = 0; i < 360 / count; i++) {
             int degree = i * count;
             usedPaint = (degree % 90 == 0) ? fontPaint : smallFontPaint;
-            PointF start = SonarUtils.getPointOnCircle(center, center, radius * 0.88f, degree);
+            PointF start = SonarUtils.getPointOnCircle(center, center, textRadius, degree);
 
             circleCanvas.drawText(Integer.toString(degree), start.x, start.y
                     - ((usedPaint.descent() + usedPaint.ascent()) / 2), usedPaint);
@@ -434,18 +465,19 @@ public class StrokeSonarView extends RotaryView implements Sonar {
 
         @Override
         public void getOutline(View view, Outline outline) {
-            Rect bounds = new Rect(view.getPaddingLeft(), view.getPaddingTop(),
-                    width - getPaddingRight(), height - getPaddingBottom());
+            float drawWidth = width - getPaddingLeft() - getPaddingRight(),
+                    drawHeight = height - getPaddingTop() - getPaddingBottom(),
+                    diameter = Math.min(drawWidth, drawHeight),
+                    textSize = Math.max(mFontSize, mThinFontSize),
+                    radius = diameter / 2f - 2.25f * textSize - mStrokeWidth / 2f;
 
-            float diameter = Math.min(bounds.width(), bounds.height());
-            float radius = diameter / 2f;
+            int center = Math.round(diameter / 2f);
+            Rect bounds = new Rect(center, center, center, center);
 
-            int inset = Math.round(0.25f * radius);
+            int inset = Math.round(-radius);
             bounds.inset(inset, inset);
 
             outline.setOval(bounds);
         }
-
     }
-
 }
