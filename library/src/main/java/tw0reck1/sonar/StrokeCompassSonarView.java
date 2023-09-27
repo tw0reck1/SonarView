@@ -195,6 +195,7 @@ public class StrokeCompassSonarView extends RotaryView implements Sonar {
         mSmallFontPaint.setColor(mColor & TEXT_MASK);
         mArcPaint.setColor(mArcColor);
         if (mSonarBitmap != null) {
+            mSonarBitmap.recycle();
             mSonarBitmap = getSonarBitmap(getWidth(), getHeight());
         }
         invalidate();
@@ -205,6 +206,7 @@ public class StrokeCompassSonarView extends RotaryView implements Sonar {
         mStrokeWidth = strokeWidth;
         mArcPaint.setStrokeWidth(strokeWidth);
         if (mSonarBitmap != null) {
+            mSonarBitmap.recycle();
             mSonarBitmap = getSonarBitmap(getWidth(), getHeight());
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -217,6 +219,7 @@ public class StrokeCompassSonarView extends RotaryView implements Sonar {
     public void setThinStrokeWidth(float thinStrokeWidth) {
         mThinStrokeWidth = thinStrokeWidth;
         if (mSonarBitmap != null) {
+            mSonarBitmap.recycle();
             mSonarBitmap = getSonarBitmap(getWidth(), getHeight());
         }
         invalidate();
@@ -226,6 +229,7 @@ public class StrokeCompassSonarView extends RotaryView implements Sonar {
     public void setFontSize(float fontSize) {
         mFontSize = fontSize;
         if (mSonarBitmap != null) {
+            mSonarBitmap.recycle();
             mSonarBitmap = getSonarBitmap(getWidth(), getHeight());
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -238,6 +242,7 @@ public class StrokeCompassSonarView extends RotaryView implements Sonar {
     public void setThinFontSize(float thinFontSize) {
         mThinFontSize = thinFontSize;
         if (mSonarBitmap != null) {
+            mSonarBitmap.recycle();
             mSonarBitmap = getSonarBitmap(getWidth(), getHeight());
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -262,6 +267,7 @@ public class StrokeCompassSonarView extends RotaryView implements Sonar {
         mSmallFontPaint.setTextSize(thinFontSize);
         mPointSize = pointSize;
         if (mSonarBitmap != null) {
+            mSonarBitmap.recycle();
             mSonarBitmap = getSonarBitmap(getWidth(), getHeight());
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -285,6 +291,9 @@ public class StrokeCompassSonarView extends RotaryView implements Sonar {
 
     @Override
     protected void onSizeChanged(int width, int height, int oldWidth, int oldHeight) {
+        if (mSonarBitmap != null) {
+            mSonarBitmap.recycle();
+        }
         mSonarBitmap = getSonarBitmap(width, height);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {

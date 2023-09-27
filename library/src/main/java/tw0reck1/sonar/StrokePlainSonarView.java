@@ -166,6 +166,7 @@ public class StrokePlainSonarView extends RotaryView implements Sonar {
         mPointPaint.setColor(mColor);
         mArcPaint.setColor(mArcColor);
         if (mSonarBitmap != null) {
+            mSonarBitmap.recycle();
             mSonarBitmap = getSonarBitmap(getWidth(), getHeight());
         }
         invalidate();
@@ -176,6 +177,7 @@ public class StrokePlainSonarView extends RotaryView implements Sonar {
         mStrokeWidth = strokeWidth;
         mArcPaint.setStrokeWidth(mStrokeWidth);
         if (mSonarBitmap != null) {
+            mSonarBitmap.recycle();
             mSonarBitmap = getSonarBitmap(getWidth(), getHeight());
         }
         invalidate();
@@ -185,6 +187,7 @@ public class StrokePlainSonarView extends RotaryView implements Sonar {
     public void setThinStrokeWidth(float thinStrokeWidth) {
         mThinStrokeWidth = thinStrokeWidth;
         if (mSonarBitmap != null) {
+            mSonarBitmap.recycle();
             mSonarBitmap = getSonarBitmap(getWidth(), getHeight());
         }
         invalidate();
@@ -212,6 +215,7 @@ public class StrokePlainSonarView extends RotaryView implements Sonar {
         mThinStrokeWidth = thinStrokeWidth;
         mPointSize = pointSize;
         if (mSonarBitmap != null) {
+            mSonarBitmap.recycle();
             mSonarBitmap = getSonarBitmap(getWidth(), getHeight());
         }
         invalidate();
@@ -232,6 +236,9 @@ public class StrokePlainSonarView extends RotaryView implements Sonar {
 
     @Override
     protected void onSizeChanged(int width, int height, int oldwidth, int oldheight) {
+        if (mSonarBitmap != null) {
+            mSonarBitmap.recycle();
+        }
         mSonarBitmap = getSonarBitmap(width, height);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
