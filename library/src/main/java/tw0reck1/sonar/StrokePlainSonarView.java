@@ -123,6 +123,7 @@ public class StrokePlainSonarView extends RotaryView implements Sonar {
         mArcColor = mColor & ARC_MASK;
         mArcPaint.setColor(mArcColor);
         mArcPaint.setStyle(Paint.Style.STROKE);
+        mArcPaint.setStrokeWidth(mStrokeWidth);
 
         mPointColor = mColor & POINT_MASK;
         mPointPaint.setColor(mColor);
@@ -173,6 +174,7 @@ public class StrokePlainSonarView extends RotaryView implements Sonar {
     @Override
     public void setStrokeWidth(float strokeWidth) {
         mStrokeWidth = strokeWidth;
+        mArcPaint.setStrokeWidth(mStrokeWidth);
         if (mSonarBitmap != null) {
             mSonarBitmap = getSonarBitmap(getWidth(), getHeight());
         }
@@ -206,6 +208,7 @@ public class StrokePlainSonarView extends RotaryView implements Sonar {
     @Override
     public void setSizes(float strokeWidth, float thinStrokeWidth, float fontSize, float thinFontSize, float pointSize) {
         mStrokeWidth = strokeWidth;
+        mArcPaint.setStrokeWidth(mStrokeWidth);
         mThinStrokeWidth = thinStrokeWidth;
         mPointSize = pointSize;
         if (mSonarBitmap != null) {
@@ -230,13 +233,6 @@ public class StrokePlainSonarView extends RotaryView implements Sonar {
     @Override
     protected void onSizeChanged(int width, int height, int oldwidth, int oldheight) {
         mSonarBitmap = getSonarBitmap(width, height);
-
-        if (mSonarBitmap != null) {
-            float radius = mSonarBitmap.getWidth() / 2f;
-
-            mArcPaint.setStrokeWidth(radius / 40);
-            mPointPaint.setStrokeWidth(radius / 40);
-        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             setOutlineProvider(new PlainOutline(width, height));
@@ -264,12 +260,14 @@ public class StrokePlainSonarView extends RotaryView implements Sonar {
         if (!mAnimator.isRunning()) return;
 
         float radius = mSonarBitmap.getWidth() / 2f;
+        float centerX = getPaddingLeft() + radius;
+        float centerY = getPaddingTop() + radius;
 
         canvas.save();
-        canvas.rotate(-getScreenRotation(), getPaddingLeft() + radius, getPaddingTop() + radius);
+        canvas.rotate(-getScreenRotation(), centerX, centerY);
 
-        drawPoints(canvas, radius, radius, radius);
-        drawArc(canvas, radius, radius, radius);
+        drawPoints(canvas, centerX, centerY, radius);
+        drawArc(canvas, centerX, centerY, radius);
 
         canvas.restore();
     }
@@ -280,9 +278,6 @@ public class StrokePlainSonarView extends RotaryView implements Sonar {
         float circleRadius = mPointSize / 2f;
         float maxRadius = radius - circleRadius - mStrokeWidth;
 
-        int paddingLeft = getPaddingLeft();
-        int paddingTop = getPaddingTop();
-
         for (SonarPoint point : mPointsList) {
             if (!point.isVisible()) continue;
 
@@ -292,22 +287,16 @@ public class StrokePlainSonarView extends RotaryView implements Sonar {
 
             mPointPaint.setAlpha((int) (point.getVisibility() * 255));
 
-            canvas.drawCircle(paddingLeft + circleCenter.x, paddingTop + circleCenter.y,
-                    circleRadius, mPointPaint);
+            canvas.drawCircle(circleCenter.x, circleCenter.y, circleRadius, mPointPaint);
         }
     }
 
     private void drawArc(Canvas canvas, float centerX, float centerY, float radius) {
         if (!hasSensors()) return;
 
-        int paddingLeft = getPaddingLeft();
-        int paddingTop = getPaddingTop();
+        PointF arcPoint = SonarUtils.getPointOnCircle(centerX, centerY, radius, mScannerAngle);
 
-        PointF arcPoint = SonarUtils.getPointOnCircle(paddingLeft + centerX, paddingTop + centerY,
-                radius, mScannerAngle);
-
-        canvas.drawLine(paddingLeft + centerX, paddingTop + centerY,
-                arcPoint.x, arcPoint.y, mArcPaint);
+        canvas.drawLine(centerX, centerY, arcPoint.x, arcPoint.y, mArcPaint);
     }
 
     private Bitmap getSonarBitmap(int width, int height) {

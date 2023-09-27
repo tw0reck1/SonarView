@@ -261,12 +261,14 @@ public class PlainSonarView extends RotaryView implements Sonar {
         if (!mAnimator.isRunning()) return;
 
         float radius = mSonarBitmap.getWidth() / 2f;
+        float centerX = getPaddingLeft() + radius;
+        float centerY = getPaddingTop() + radius;
 
         canvas.save();
-        canvas.rotate(-getScreenRotation(), getPaddingLeft() + radius, getPaddingTop() + radius);
+        canvas.rotate(-getScreenRotation(), centerX, centerY);
 
-        drawPoints(canvas, radius, radius, radius);
-        drawArc(canvas, radius, radius, radius);
+        drawPoints(canvas, centerX, centerY, radius);
+        drawArc(canvas, centerX, centerY, radius);
 
         canvas.restore();
     }
@@ -277,9 +279,6 @@ public class PlainSonarView extends RotaryView implements Sonar {
         float circleRadius = mPointSize / 2f;
         float maxRadius = radius - circleRadius - mStrokeWidth;
 
-        int paddingLeft = getPaddingLeft();
-        int paddingTop = getPaddingTop();
-
         for (SonarPoint point : mPointsList) {
             if (!point.isVisible()) continue;
 
@@ -289,8 +288,7 @@ public class PlainSonarView extends RotaryView implements Sonar {
 
             mPointPaint.setAlpha((int) (point.getVisibility() * 255));
 
-            canvas.drawCircle(paddingLeft + circleCenter.x, paddingTop + circleCenter.y,
-                    circleRadius, mPointPaint);
+            canvas.drawCircle(circleCenter.x, circleCenter.y, circleRadius, mPointPaint);
         }
     }
 
@@ -301,21 +299,18 @@ public class PlainSonarView extends RotaryView implements Sonar {
         int offset = 360;
         int transparentArc = 0x00ffffff & mArcColor;
 
-        int paddingLeft = getPaddingLeft();
-        int paddingTop = getPaddingTop();
-
-        Shader gradient = new SweepGradient(paddingLeft + centerX, paddingTop + centerY,
+        Shader gradient = new SweepGradient(centerX, centerY,
                 new int[] {transparentArc, transparentArc, transparentArc,
                         transparentArc, transparentArc, mArcColor}, null);
 
         Matrix gradientMatrix = new Matrix();
-        gradientMatrix.preRotate(degree - 1, paddingLeft + centerX, paddingTop + centerY);
+        gradientMatrix.preRotate(degree - 1, centerX, centerY);
         gradient.setLocalMatrix(gradientMatrix);
 
         mArcPaint.setShader(gradient);
 
-        final RectF rect = new RectF(paddingLeft, paddingTop,
-                paddingLeft + 2f * radius, paddingTop + 2f * radius);
+        final RectF rect = new RectF(centerX - radius, centerY + radius,
+                centerX + radius, centerY - radius);
 
         canvas.drawArc(rect, degree, offset, true, mArcPaint);
     }

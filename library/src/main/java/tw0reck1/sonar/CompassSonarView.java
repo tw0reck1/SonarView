@@ -318,26 +318,25 @@ public class CompassSonarView extends RotaryView implements Sonar {
         if (mSonarBitmap == null) return;
 
         float radius = mSonarBitmap.getWidth() / 2f;
+        float centerX = getPaddingLeft() + radius;
+        float centerY = getPaddingTop() + radius;
 
-        drawDirections(canvas, radius, radius, radius);
+        drawDirections(canvas, centerX, centerY, radius);
 
         canvas.save();
-        canvas.rotate(mCurrentAngle - getScreenRotation(), getPaddingLeft() + radius, getPaddingTop() + radius);
+        canvas.rotate(mCurrentAngle - getScreenRotation(), centerX, centerY);
 
         canvas.drawBitmap(mSonarBitmap, getPaddingLeft(), getPaddingTop(), null);
 
         if (mAnimator.isRunning()) {
-            drawPoints(canvas, radius, radius, radius);
-            drawArc(canvas, radius, radius, radius);
+            drawPoints(canvas, centerX, centerY, radius);
+            drawArc(canvas, centerX, centerY, radius);
         }
 
         canvas.restore();
     }
 
     private void drawDirections(Canvas canvas, float centerX, float centerY, float radius) {
-        int paddingLeft = getPaddingLeft();
-        int paddingTop = getPaddingTop();
-
         int screenRotation = getScreenRotation();
         float offset = Math.max(mFontSize, mThinFontSize) / 2f;
         Paint usedPaint;
@@ -345,8 +344,7 @@ public class CompassSonarView extends RotaryView implements Sonar {
         for (int i = 0; i < DIRECTIONS.length; i++) {
             bigLetter = (i % 2 == 0);
             usedPaint = bigLetter ? mFontPaint : mSmallFontPaint;
-            PointF start = SonarUtils.getPointOnCircle(paddingLeft + centerX,
-                    paddingTop + centerY, radius - offset,
+            PointF start = SonarUtils.getPointOnCircle(centerX, centerY, radius - offset,
                     mCurrentAngle - screenRotation + i * DIRECTION_ANGLE);
 
             canvas.drawText(DIRECTIONS[i], start.x, start.y
@@ -358,9 +356,6 @@ public class CompassSonarView extends RotaryView implements Sonar {
         if (!hasSensors()) return;
 
         float circleBaseRadius = mPointSize / 2f;
-
-        int paddingLeft = getPaddingLeft();
-        int paddingTop = getPaddingTop();
 
         float textSize = Math.max(mFontSize, mThinFontSize);
         radius -= textSize + mStrokeWidth / 2f;
@@ -380,8 +375,7 @@ public class CompassSonarView extends RotaryView implements Sonar {
                     mPointGradientStartColor, mPointGradientEndColor, Shader.TileMode.CLAMP));
             mPointPaint.setAlpha((int) (point.getVisibility() * 255));
 
-            canvas.drawCircle(paddingLeft + circleCenter.x, paddingTop + circleCenter.y,
-                    circleRadius, mPointPaint);
+            canvas.drawCircle(circleCenter.x, circleCenter.y, circleRadius, mPointPaint);
         }
     }
 
@@ -392,17 +386,14 @@ public class CompassSonarView extends RotaryView implements Sonar {
         int offset = 360;
         int transparentArc = 0x00ffffff & mArcColor;
 
-        int paddingLeft = getPaddingLeft();
-        int paddingTop = getPaddingTop();
-
         float textSize = Math.max(mFontSize, mThinFontSize);
 
-        Shader gradient = new SweepGradient(paddingLeft + centerX, paddingTop + centerY,
+        Shader gradient = new SweepGradient(centerX, centerY,
                 new int[] {transparentArc, transparentArc, transparentArc,
                         transparentArc, transparentArc, mArcColor}, null);
 
         Matrix gradientMatrix = new Matrix();
-        gradientMatrix.preRotate(degree - 1, paddingLeft + centerX, paddingTop + centerY);
+        gradientMatrix.preRotate(degree - 1, centerX, centerY);
         gradient.setLocalMatrix(gradientMatrix);
 
         mArcPaint.setShader(gradient);
@@ -516,14 +507,18 @@ public class CompassSonarView extends RotaryView implements Sonar {
 
         @Override
         public void getOutline(View view, Outline outline) {
-            float drawWidth = width - getPaddingLeft() - getPaddingRight(),
-                    drawHeight = height - getPaddingTop() - getPaddingBottom(),
-                    textSize = Math.max(mFontSize, mThinFontSize),
+            int paddingLeft = getPaddingLeft(),
+                    paddingTop = getPaddingTop();
+            float drawWidth = width - paddingLeft - getPaddingRight(),
+                    drawHeight = height - paddingTop - getPaddingBottom(),
                     diameter = Math.min(drawWidth, drawHeight),
+                    textSize = Math.max(mFontSize, mThinFontSize),
                     radius = diameter / 2f - textSize - mStrokeWidth / 2f;
-            int center = Math.round(diameter / 2f);
 
-            Rect bounds = new Rect(center, center, center, center);
+            int centerX = Math.round(paddingLeft + drawWidth / 2f);
+            int centerY = Math.round(paddingTop + drawHeight / 2f);
+
+            Rect bounds = new Rect(centerX, centerY, centerX, centerY);
 
             int inset = Math.round(-0.9f * radius);
             bounds.inset(inset, inset);
