@@ -410,7 +410,5 @@ public class PlainSonarView extends RotaryView implements Sonar {
             outline.setOval(view.getPaddingLeft(), view.getPaddingTop(),
                     width - getPaddingRight(), height - getPaddingBottom());
         }
-
     }
-
 }

@@ -228,6 +228,7 @@ public class StrokeCompassSonarView extends RotaryView implements Sonar {
     @Override
     public void setFontSize(float fontSize) {
         mFontSize = fontSize;
+        mFontPaint.setTextSize(fontSize);
         if (mSonarBitmap != null) {
             mSonarBitmap.recycle();
             mSonarBitmap = getSonarBitmap(getWidth(), getHeight());
@@ -241,6 +242,7 @@ public class StrokeCompassSonarView extends RotaryView implements Sonar {
     @Override
     public void setThinFontSize(float thinFontSize) {
         mThinFontSize = thinFontSize;
+        mSmallFontPaint.setTextSize(thinFontSize);
         if (mSonarBitmap != null) {
             mSonarBitmap.recycle();
             mSonarBitmap = getSonarBitmap(getWidth(), getHeight());
