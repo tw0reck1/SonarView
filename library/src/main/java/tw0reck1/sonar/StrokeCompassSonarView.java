@@ -33,6 +33,8 @@ import android.view.Surface;
 import android.view.View;
 import android.view.ViewOutlineProvider;
 import android.view.WindowManager;
+import android.view.animation.DecelerateInterpolator;
+import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 
 import java.util.Collection;
@@ -70,6 +72,8 @@ public class StrokeCompassSonarView extends RotaryView implements Sonar {
             mArcPaint = new Paint(Paint.ANTI_ALIAS_FLAG),
             mFontPaint = new Paint(Paint.ANTI_ALIAS_FLAG),
             mSmallFontPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+
+    private Interpolator mPointsInterpolator = new DecelerateInterpolator(0.6f);
 
     private Bitmap mSonarBitmap;
 
@@ -365,14 +369,15 @@ public class StrokeCompassSonarView extends RotaryView implements Sonar {
         for (SonarPoint point : mPointsList) {
             if (!point.isVisible()) continue;
 
-            float sizeRatio = 1f + ((2.5f * (1f - point.getVisibility())));
+            float visibility = mPointsInterpolator.getInterpolation(point.getVisibility());
+            float sizeRatio = 0.75f + ((0.5f * (1f - visibility)));
             float circleRadius = circleBaseRadius * sizeRatio;
 
             PointF circleCenter = SonarUtils.getPointOnCircle(centerX, centerY,
                     (radius * 0.9f - circleBaseRadius) * point.getDetectedDist(),
                     point.getAngle());
 
-            mPointPaint.setAlpha((int) (point.getVisibility() * 255));
+            mPointPaint.setAlpha((int) (visibility * 255));
 
             canvas.drawCircle(circleCenter.x, circleCenter.y, circleRadius, mPointPaint);
         }

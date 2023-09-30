@@ -38,6 +38,8 @@ import android.view.Surface;
 import android.view.View;
 import android.view.ViewOutlineProvider;
 import android.view.WindowManager;
+import android.view.animation.DecelerateInterpolator;
+import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 
 import java.util.Collection;
@@ -54,14 +56,14 @@ public class CompassSonarView extends RotaryView implements Sonar {
             TEXT_MASK = 0xbfffffff,
             STROKE_MASK = 0x9fffffff,
             POINT_GRADIENT_START_MASK = 0xffffffff,
-            POINT_GRADIENT_END_MASK = 0x7fffffff;
+            POINT_GRADIENT_END_MASK = 0xbfffffff;
 
     public static final float
             DEFAULT_FONT_SIZE = 28f,
             DEFAULT_THIN_FONT_SIZE = 21f,
             DEFAULT_STROKE_WIDTH = 2.5f,
             DEFAULT_THIN_STROKE_WIDTH = 1.25f,
-            DEFAULT_POINT_SIZE = 8f;
+            DEFAULT_POINT_SIZE = 16f;
 
     private static final int
             LINE_COUNT = 24,
@@ -78,6 +80,8 @@ public class CompassSonarView extends RotaryView implements Sonar {
             mArcPaint = new Paint(Paint.ANTI_ALIAS_FLAG),
             mFontPaint = new Paint(Paint.ANTI_ALIAS_FLAG),
             mSmallFontPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+
+    private Interpolator mPointsInterpolator = new DecelerateInterpolator(0.6f);
 
     private Bitmap mSonarBitmap;
 
@@ -372,7 +376,8 @@ public class CompassSonarView extends RotaryView implements Sonar {
         for (SonarPoint point : mPointsList) {
             if (!point.isVisible()) continue;
 
-            float sizeRatio = 1f + ((2.5f * (1f - point.getVisibility())));
+            float visibility = mPointsInterpolator.getInterpolation(point.getVisibility());
+            float sizeRatio = 0.75f + ((0.5f * (1f - visibility)));
             float circleRadius = circleBaseRadius * sizeRatio;
 
             PointF circleCenter = SonarUtils.getPointOnCircle(centerX, centerY,
@@ -380,9 +385,9 @@ public class CompassSonarView extends RotaryView implements Sonar {
                     point.getAngle());
 
             mPointPaint.setShader(new RadialGradient(
-                    circleCenter.x, circleCenter.y, 3.5f * circleBaseRadius,
+                    circleCenter.x, circleCenter.y, 1.25f * circleBaseRadius,
                     mPointGradientStartColor, mPointGradientEndColor, Shader.TileMode.CLAMP));
-            mPointPaint.setAlpha((int) (point.getVisibility() * 255));
+            mPointPaint.setAlpha((int) (visibility * 255));
 
             canvas.drawCircle(circleCenter.x, circleCenter.y, circleRadius, mPointPaint);
         }
