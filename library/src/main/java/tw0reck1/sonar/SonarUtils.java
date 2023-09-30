@@ -64,6 +64,13 @@ class SonarUtils {
         return new PointF(resultX, resultY);
     }
 
+    static float getDistanceOnArc(float center, float radius, int angle) {
+        PointF a = getPointOnCircle(center, center, radius, 0);
+        PointF b = getPointOnCircle(center, center, radius, angle);
+
+        return (float) Math.hypot(a.x - b.x, a.y - b.y);
+    }
+
     static int clamp(int value, int min, int max) {
         return Math.min(Math.max(min, value), max);
     }

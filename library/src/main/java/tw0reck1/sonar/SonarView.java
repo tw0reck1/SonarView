@@ -452,14 +452,21 @@ public class SonarView extends RotaryView implements Sonar {
         smallFontPaint.setTextAlign(Paint.Align.CENTER);
         smallFontPaint.setTextSize(mThinFontSize);
 
-        int count = (smallFontPaint.getTextSize() > 24f)
-                ? 15 : ((smallFontPaint.getTextSize() > 12f) ? 30 : 45);
+        float textRadius = radius - 1.125f * textSize - mStrokeWidth / 2f;
+        float minTextSpread = 1.8f * textSize;
+
+        int spreadAngle;
+        if (SonarUtils.getDistanceOnArc(center, textRadius, 15) > minTextSpread) {
+            spreadAngle = 15;
+        } else if (SonarUtils.getDistanceOnArc(center, textRadius, 30) > minTextSpread) {
+            spreadAngle = 30;
+        } else {
+            spreadAngle = 45;
+        }
 
         Paint usedPaint;
-
-        float textRadius = radius - 1.125f * textSize - mStrokeWidth / 2f;
-        for (int i = 0; i < 360 / count; i++) {
-            int degree = i * count;
+        for (int i = 0; i < 360 / spreadAngle; i++) {
+            int degree = i * spreadAngle;
             usedPaint = (degree % 90 == 0) ? fontPaint : smallFontPaint;
             PointF start = SonarUtils.getPointOnCircle(center, center, textRadius, degree);
 
