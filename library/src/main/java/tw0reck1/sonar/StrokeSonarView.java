@@ -197,6 +197,9 @@ public class StrokeSonarView extends RotaryView implements Sonar {
             mSonarBitmap.recycle();
             mSonarBitmap = getSonarBitmap(getWidth(), getHeight());
         }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            setOutlineProvider(new SonarOutline(getWidth(), getHeight()));
+        }
         invalidate();
     }
 
@@ -217,6 +220,9 @@ public class StrokeSonarView extends RotaryView implements Sonar {
             mSonarBitmap.recycle();
             mSonarBitmap = getSonarBitmap(getWidth(), getHeight());
         }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            setOutlineProvider(new SonarOutline(getWidth(), getHeight()));
+        }
         invalidate();
     }
 
@@ -226,6 +232,9 @@ public class StrokeSonarView extends RotaryView implements Sonar {
         if (mSonarBitmap != null) {
             mSonarBitmap.recycle();
             mSonarBitmap = getSonarBitmap(getWidth(), getHeight());
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            setOutlineProvider(new SonarOutline(getWidth(), getHeight()));
         }
         invalidate();
     }
@@ -246,6 +255,9 @@ public class StrokeSonarView extends RotaryView implements Sonar {
         if (mSonarBitmap != null) {
             mSonarBitmap.recycle();
             mSonarBitmap = getSonarBitmap(getWidth(), getHeight());
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            setOutlineProvider(new SonarOutline(getWidth(), getHeight()));
         }
         invalidate();
     }
