@@ -316,8 +316,7 @@ public class PlainSonarView extends RotaryView implements Sonar {
 
         mArcPaint.setShader(gradient);
 
-        final RectF rect = new RectF(centerX - radius, centerY + radius,
-                centerX + radius, centerY - radius);
+        final RectF rect = new RectF(centerX - radius, centerY - radius, centerX + radius, centerY + radius);
 
         canvas.drawArc(rect, degree, offset, true, mArcPaint);
     }
