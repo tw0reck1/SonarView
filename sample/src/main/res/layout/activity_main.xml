@@ -29,13 +29,20 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             app:sv_color="#f00"
+            app:sv_strokeWidth="1dp"
+            app:sv_thinStrokeWidth="0.5dp"
+            app:sv_pointSize="8dp"
             app:sv_loopDuration="0"/>
 
-        <tw0reck1.sonar.SonarView
+        <tw0reck1.sonar.StrokeSonarView
             android:id="@+id/sonarview2"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            app:sv_fontSize="9sp"
+            app:sv_thinFontSize="6sp"
+            app:sv_pointSize="16dp"
+            app:sv_outerBorder="false"
             app:sv_color="#fff"
             app:sv_loopDuration="500"/>
 
@@ -48,29 +55,35 @@
         android:padding="12dp"
         android:orientation="horizontal">
 
-        <tw0reck1.sonar.SonarView
+        <tw0reck1.sonar.CompassSonarView
             android:id="@+id/sonarview3"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:layout_marginRight="6dp"
+            app:sv_fontSize="12sp"
+            app:sv_thinFontSize="8sp"
+            app:sv_pointSize="12dp"
             app:sv_color="#ff0"
             app:sv_loopDuration="60000"
             app:sv_outerBorder="false"/>
 
-        <tw0reck1.sonar.PlainSonarView
+        <tw0reck1.sonar.StrokePlainSonarView
             android:id="@+id/plainsonarview2"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             app:sv_color="#0ff"/>
 
-        <tw0reck1.sonar.SonarView
+        <tw0reck1.sonar.StrokeCompassSonarView
             android:id="@+id/sonarview4"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:layout_marginLeft="6dp"
+            app:sv_fontSize="21sp"
+            app:sv_thinFontSize="14sp"
+            app:sv_pointSize="8dp"
             app:sv_color="#f0f"
             app:sv_loopDuration="5000"
             app:sv_outerBorder="false"/>

@@ -13,7 +13,7 @@ Declaring view in layout:
 Setup code:
 ```java
 ...
-    mSonarView = (SonarView) findViewById(R.id.sonarview);
+    SonarView sonarView = (SonarView) findViewById(R.id.sonarview);
     List<SonarPoint> sonarPoints = Arrays.asList(
             new SonarPoint(0, 0.5f), // angle when facing north; distance from center;
             new SonarPoint(30, 1f),
@@ -22,9 +22,10 @@ Setup code:
             new SonarPoint(180, 0.6f),
             new SonarPoint(225, 0.7f)
     );
-    mSonarView.setPoints(mPointsList);
+    sonarView.setPoints(sonarPoints);
+    sonarView.startAnimation();
 ...
 ```
-![Sample](sample.png)
+![Sample](sample.jpg)
 ### Samples
-![Screenshot](screenshot.png)
+![Screenshot](screenshot.jpg)
