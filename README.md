@@ -11,19 +11,19 @@ Declaring view in layout:
         app:sv_color="#0f0"/>
 ```
 Setup code:
-```java
+```kotlin
 ...
-    SonarView sonarView = (SonarView) findViewById(R.id.sonarview);
-    List<SonarPoint> sonarPoints = Arrays.asList(
-            new SonarPoint(0, 0.5f), // angle when facing north; distance from center;
-            new SonarPoint(30, 1f),
-            new SonarPoint(60, 0.8f),
-            new SonarPoint(120, 0.4f),
-            new SonarPoint(180, 0.6f),
-            new SonarPoint(225, 0.7f)
-    );
-    sonarView.setPoints(sonarPoints);
-    sonarView.startAnimation();
+    val sonarView = findViewById<SonarView>(R.id.sonarview)
+    val sonarPoints = listOf(
+        SonarPoint(0, 0.5f), // angle when facing north; distance from center;
+        SonarPoint(30, 1f),
+        SonarPoint(60, 0.8f),
+        SonarPoint(120, 0.4f),
+        SonarPoint(180, 0.6f),
+        SonarPoint(225, 0.7f)
+    )
+    sonarView.setPoints(sonarPoints)
+    sonarView.startAnimation()
 ...
 ```
 ![Sample](sample.jpg)
