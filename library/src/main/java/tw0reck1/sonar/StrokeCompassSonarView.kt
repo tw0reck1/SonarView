@@ -422,6 +422,7 @@ class StrokeCompassSonarView : RotaryView, Sonar {
                 point.angle
             )
 
+            pointPaint.color = point.color ?: color
             pointPaint.alpha = (visibility * 255f).roundToInt()
 
             canvas.drawCircle(circleCenter.x, circleCenter.y, circleRadius, pointPaint)

@@ -99,8 +99,6 @@ class CompassSonarView : RotaryView, Sonar {
 
     private var color: Int = DEFAULT_COLOR
     private var arcColor = DEFAULT_COLOR and ARC_MASK
-    private var pointGradientStartColor = DEFAULT_COLOR and POINT_GRADIENT_START_MASK
-    private var pointGradientEndColor = DEFAULT_COLOR and POINT_GRADIENT_END_MASK
 
     private var loopDuration = DEFAULT_LOOP_DURATION
 
@@ -189,8 +187,6 @@ class CompassSonarView : RotaryView, Sonar {
         isClickable = true
 
         arcColor = color and ARC_MASK
-        pointGradientStartColor = color and POINT_GRADIENT_START_MASK
-        pointGradientEndColor = color and POINT_GRADIENT_END_MASK
 
         arcPaint.style = Paint.Style.FILL
         pointPaint.color = color
@@ -223,8 +219,6 @@ class CompassSonarView : RotaryView, Sonar {
         this.color = color
 
         arcColor = color and ARC_MASK
-        pointGradientStartColor = color and POINT_GRADIENT_START_MASK
-        pointGradientEndColor = color and POINT_GRADIENT_END_MASK
 
         pointPaint.color = color
         fontPaint.color = color
@@ -427,6 +421,10 @@ class CompassSonarView : RotaryView, Sonar {
                 (maxRadius * 0.9f - circleBaseRadius) * point.detectionDistance,
                 point.angle
             )
+
+            val pointColor = point.color ?: color
+            val pointGradientStartColor = pointColor and POINT_GRADIENT_START_MASK
+            val pointGradientEndColor = pointColor and POINT_GRADIENT_END_MASK
 
             pointPaint.shader = RadialGradient(
                 circleCenter.x,

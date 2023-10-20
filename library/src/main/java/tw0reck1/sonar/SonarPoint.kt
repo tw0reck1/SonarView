@@ -30,6 +30,7 @@ class SonarPoint(
     val angle: Int,
     @FloatRange(from = 0.0, 1.0)
     val distance: Float,
+    val color: Int? = null,
     val visibilityMillis: Long = DEFAULT_VISIBILITY_MILLIS,
 ) {
     val isVisible: Boolean
