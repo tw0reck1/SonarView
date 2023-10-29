@@ -367,8 +367,8 @@ class CompassSonarView : RotaryView, Sonar {
         canvas.drawBitmap(bitmap, paddingLeft.toFloat(), paddingTop.toFloat(), null)
 
         if (animator.isRunning) {
-            drawPoints(canvas, centerX, centerY, radius)
             drawArc(canvas, centerX, centerY, radius)
+            drawPoints(canvas, centerX, centerY, radius)
         }
 
         canvas.restore()

@@ -293,8 +293,8 @@ class PlainSonarView : RotaryView, Sonar {
         canvas.save()
         canvas.rotate(-screenRotation.toFloat(), centerX, centerY)
 
-        drawPoints(canvas, centerX, centerY, radius)
         drawArc(canvas, centerX, centerY, radius)
+        drawPoints(canvas, centerX, centerY, radius)
 
         canvas.restore()
     }
