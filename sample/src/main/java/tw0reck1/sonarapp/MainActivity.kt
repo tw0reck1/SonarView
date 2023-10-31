@@ -25,8 +25,8 @@ class MainActivity : Activity() {
             findViewById(R.id.plainsonarview2),
             findViewById(R.id.sonarview1),
             findViewById(R.id.sonarview2),
-            findViewById(R.id.sonarview3),
-            findViewById(R.id.sonarview4)
+            findViewById(R.id.compassview1),
+            findViewById(R.id.compassview2)
         )
             .forEach { sonar ->
                 sonar.setPoints(randomSonarPoints)

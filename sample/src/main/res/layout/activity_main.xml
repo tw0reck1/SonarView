@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/layout"
@@ -10,84 +11,96 @@
 
     <tw0reck1.sonar.PlainSonarView
         android:id="@+id/plainsonarview1"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_weight="2"
-        android:padding="12dp"
-        app:sv_color="#0f0"/>
+        android:padding="6dp"
+        app:sv_color="#0f0"
+        app:layout_constraintDimensionRatio="w,1:1"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/plainsonarview2"
+        app:layout_constraintBottom_toTopOf="@id/sonarview1" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <tw0reck1.sonar.StrokePlainSonarView
+        android:id="@+id/plainsonarview2"
+        android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:padding="12dp"
-        android:orientation="horizontal">
+        android:padding="40dp"
+        app:sv_color="#0ff"
+        app:sv_strokeWidth="4.5dp"
+        app:sv_thinStrokeWidth="0.4dp"
+        app:sv_pointSize="6dp"
+        app:layout_constraintDimensionRatio="w,1:1"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toEndOf="@id/plainsonarview1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/sonarview2" />
 
-        <tw0reck1.sonar.SonarView
-            android:id="@+id/sonarview1"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            app:sv_color="#f00"
-            app:sv_strokeWidth="1dp"
-            app:sv_thinStrokeWidth="0.5dp"
-            app:sv_pointSize="8dp"
-            app:sv_loopDuration="0"/>
-
-        <tw0reck1.sonar.StrokeSonarView
-            android:id="@+id/sonarview2"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            app:sv_fontSize="9sp"
-            app:sv_thinFontSize="6sp"
-            app:sv_pointSize="16dp"
-            app:sv_outerBorder="false"
-            app:sv_color="#fff"
-            app:sv_loopDuration="500"/>
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
+    <tw0reck1.sonar.SonarView
+        android:id="@+id/sonarview1"
+        android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:padding="12dp"
-        android:orientation="horizontal">
+        android:padding="24dp"
+        app:sv_fontSize="9sp"
+        app:sv_thinFontSize="6sp"
+        app:sv_pointSize="16dp"
+        app:sv_outerBorder="false"
+        app:sv_color="#fff"
+        app:sv_loopDuration="500"
+        app:layout_constraintDimensionRatio="w,1:1"
+        app:layout_constraintTop_toBottomOf="@id/plainsonarview1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/sonarview2"
+        app:layout_constraintBottom_toTopOf="@id/compassview1" />
 
-        <tw0reck1.sonar.CompassSonarView
-            android:id="@+id/sonarview3"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:layout_marginRight="6dp"
-            app:sv_fontSize="12sp"
-            app:sv_thinFontSize="8sp"
-            app:sv_pointSize="12dp"
-            app:sv_color="#ff0"
-            app:sv_loopDuration="60000"
-            app:sv_outerBorder="false"/>
+    <tw0reck1.sonar.StrokeSonarView
+        android:id="@+id/sonarview2"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:padding="6dp"
+        app:sv_color="#f00"
+        app:sv_strokeWidth="1dp"
+        app:sv_thinStrokeWidth="0.5dp"
+        app:sv_pointSize="8dp"
+        app:sv_loopDuration="0"
+        app:layout_constraintDimensionRatio="w,1:1"
+        app:layout_constraintTop_toBottomOf="@id/plainsonarview2"
+        app:layout_constraintStart_toEndOf="@id/sonarview1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/compassview2" />
 
-        <tw0reck1.sonar.StrokePlainSonarView
-            android:id="@+id/plainsonarview2"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            app:sv_color="#0ff"/>
+    <tw0reck1.sonar.CompassSonarView
+        android:id="@+id/compassview1"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:padding="6dp"
+        app:sv_fontSize="10sp"
+        app:sv_thinFontSize="6sp"
+        app:sv_pointSize="12dp"
+        app:sv_color="#ff0"
+        app:sv_loopDuration="60000"
+        app:sv_outerBorder="false"
+        app:layout_constraintDimensionRatio="w,1:1"
+        app:layout_constraintTop_toBottomOf="@id/sonarview1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/compassview2"
+        app:layout_constraintBottom_toBottomOf="parent" />
 
-        <tw0reck1.sonar.StrokeCompassSonarView
-            android:id="@+id/sonarview4"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:layout_marginLeft="6dp"
-            app:sv_fontSize="21sp"
-            app:sv_thinFontSize="14sp"
-            app:sv_pointSize="8dp"
-            app:sv_color="#f0f"
-            app:sv_loopDuration="5000"
-            app:sv_outerBorder="false"/>
+    <tw0reck1.sonar.StrokeCompassSonarView
+        android:id="@+id/compassview2"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:padding="24dp"
+        app:sv_fontSize="21sp"
+        app:sv_thinFontSize="14sp"
+        app:sv_pointSize="8dp"
+        app:sv_color="#f0f"
+        app:sv_loopDuration="5000"
+        app:sv_outerBorder="false"
+        app:layout_constraintDimensionRatio="w,1:1"
+        app:layout_constraintTop_toBottomOf="@id/sonarview2"
+        app:layout_constraintStart_toEndOf="@id/compassview1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
 
-    </LinearLayout>
-
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

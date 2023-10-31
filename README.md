@@ -28,4 +28,4 @@ Setup code:
 ```
 ![Sample](sample.jpg)
 ### Samples
-![Screenshot](screenshot.jpg)
+![Screenshot](screenshot.png)
